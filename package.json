@@ -1,0 +1,19 @@
+{
+  "name": "three",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "npx vite"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "querystringify": "^2.2.0",
+    "three": "^0.164.1"
+  },
+  "devDependencies": {
+    "vite": "^5.2.10"
+  }
+}
