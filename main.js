@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { Cube } from './src/model/classes/Cube.js';
 
 let minValue = 0;
 let maxValue = 0;
-
+let cont = 0;
 // Mapa de colores para cada tipo de cubo
 const typeColorMap = {
     'hierro': '#808080',  // Gris
@@ -12,27 +13,25 @@ const typeColorMap = {
 };
 
 // Función para obtener un tipo aleatorio ("hierro", "oro", "cobre")
-function getRandomType() {
+const getRandomType = () => {
     const types = ['hierro', 'oro', 'cobre'];
     const randomIndex = Math.floor(Math.random() * types.length);
     return types[randomIndex];
 }
 
-const cubeColor = (cubeMineralLey) => {
+const cubeColor = (cubey, cubeMineralLey) => {
     if(cubeMineralLey == null){
         return "#FFFFFF";
     }
-    console.log("ley: " + cubeMineralLey + " min: " + minValue + " max: " + maxValue);
     const nomralizeLey = (cubeMineralLey - minValue)/(maxValue - minValue);
-    console.log("nomal: " + nomralizeLey);
     const hexNormalize = (parseInt(nomralizeLey * 255));
-    console.log("hexNormalize: " + hexNormalize);
-    const hex = "#FF" + (hexNormalize <= 15 ? "0" + hexNormalize.toString(16) : hexNormalize.toString(16)) + "FF";
-    console.log(hex);
+    const color = (hexNormalize <= 15 ? "0" + hexNormalize.toString(16) : hexNormalize.toString(16)).toString();
+    const hex = "#" + color + "" + parseInt(cubey*3).toString() + parseInt(cubey*3).toString();
+    // const hex = "#" + color + "A1A1";
     return hex;
 }
 
-fetch('Scenario00.txt')
+fetch('Scenario02.txt')
 .then(response => {
   if (!response.ok) {
     throw new Error('Error al cargar el archivo');
@@ -40,12 +39,14 @@ fetch('Scenario00.txt')
   return response.text();
 })
 .then(textData => {
+    const cube = new Cube(2, 2, 1);
+    console.log("info" + cube.getCords()[0]);
     let cubes = [];
     const data = textData.split('\n');
     data.forEach(cube => {
         cubes.push(cube.split(","));
   })
-  mainCode(cubes);
+  setInterval(() => {mainCode(cubes)}, 1000);
 })
 .catch(error => {
   console.error('Error al cargar el archivo:', error);
@@ -53,11 +54,12 @@ fetch('Scenario00.txt')
 
 const mainCode = (cubesData) => {
 
-    console.log(cubesData);
+    console.log(cont);
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color('#FFFFFF');
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    // const camera = new THREE.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2,  window.innerHeight / 2, window.innerHeight / -2, 1, 100);
 
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -93,33 +95,37 @@ const mainCode = (cubesData) => {
 
     minValue = greyScale()[0];
     maxValue = greyScale()[1];
-
     cubesData.forEach(cube => {
-        console.log("cargando")
-        const solidMaterial = new THREE.MeshBasicMaterial({ color: cubeColor(cube[4]) });
-
-        // Material para el wireframe (borde negro)
-        const wireframeMaterial = new THREE.MeshBasicMaterial({ color: '#000000', wireframe: true });
-
-        const solidCube = new THREE.Mesh(boxGeometry, solidMaterial);
-        const wireframeCube = new THREE.Mesh(boxGeometry, wireframeMaterial);
-
-        // Agrupa ambos para crear el efecto de bordes negros
-        const cubeGroup = new THREE.Group();
-        cubeGroup.add(solidCube);
-        cubeGroup.add(wireframeCube);
-
-        cubeGroup.type = "hierro";  // Asigna el tipo al grupo
-        
-        // Posiciona el cubo en la cuadrícula 3D
-        cubeGroup.position.set(
-            cube[0] * spacing,
-            cube[1] * spacing,
-            cube[2] * spacing
-        );
-
-        cubesToScreen.push(cubeGroup);  // Añade el grupo a la lista
-        scene.add(cubeGroup);  // Añade el grupo a la escena
+        // if(cube[0] == cont){
+            // console.log("cargando")
+            const solidMaterial = new THREE.MeshBasicMaterial({ color: cubeColor(cube[1], cube[4]) });
+    
+            // Material para el wireframe (borde negro)
+            const wireframeMaterial = new THREE.MeshBasicMaterial({ color: "#000000", wireframe: true });
+    
+            const solidCube = new THREE.Mesh(boxGeometry, solidMaterial);
+            const wireframeCube = new THREE.Mesh(boxGeometry, wireframeMaterial);
+    
+            // Agrupa ambos para crear el efecto de bordes negros
+            const cubeGroup = new THREE.Group();
+            cubeGroup.add(solidCube);
+            // cubeGroup.add(wireframeCube);
+    
+            cubeGroup.type = "hierro";  // Asigna el tipo al grupo
+            
+            // Posiciona el cubo en la cuadrícula 3D
+            cubeGroup.position.set(
+                cube[0] * spacing,
+                cube[1] * spacing,
+                cube[2] * spacing
+            );
+    
+            cubesToScreen.push(cubeGroup);  // Añade el grupo a la lista
+            scene.add(cubeGroup);  // Añade el grupo a la escena
+            // console.log("cont: " + cont);
+            // animate();
+        // }
+        // cont++;
     });
 
     // Posiciona la cámara para tener una vista amplia
@@ -173,41 +179,4 @@ const mainCode = (cubesData) => {
     buttonContainer.appendChild(buttonCopper);
 
     document.body.appendChild(buttonContainer);  // Añade el contenedor de botones al cuerpo del documento
-}
-
-const randomCubesCreator = () => {
-    // Crea una cuadrícula 3D de cubos con bordes negros
-    for (let x = 0; x < gridSize; x++) {
-        for (let y = 0; y < gridSize; y++) {
-            for (let z = 0; z < gridSize; z++) {
-                const type = getRandomType() // Obtiene un tipo aleatorio
-                
-                // Material para el cubo sólido
-                const solidMaterial = new THREE.MeshBasicMaterial({ color: typeColorMap[type] });
-
-                // Material para el wireframe (borde negro)
-                const wireframeMaterial = new THREE.MeshBasicMaterial({ color: '#000000', wireframe: true });
-
-                const solidCube = new THREE.Mesh(boxGeometry, solidMaterial);
-                const wireframeCube = new THREE.Mesh(boxGeometry, wireframeMaterial);
-
-                // Agrupa ambos para crear el efecto de bordes negros
-                const cubeGroup = new THREE.Group();
-                cubeGroup.add(solidCube);
-                // cubeGroup.add(wireframeCube);
-
-                cubeGroup.type = type;  // Asigna el tipo al grupo
-                
-                // Posiciona el cubo en la cuadrícula 3D
-                cubeGroup.position.set(
-                    x * spacing - offset,  // Posición ajustada para centrar la cuadrícula
-                    y * spacing - offset,
-                    z * spacing - offset
-                );
-
-                cubes.push(cubeGroup);  // Añade el grupo a la lista
-                scene.add(cubeGroup);  // Añade el grupo a la escena
-            }
-        }
-    }
 }
