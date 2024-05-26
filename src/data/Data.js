@@ -12,6 +12,10 @@ export class Data{
   }
 
   load(txt){
+
+    if(txt == null){
+      txt = 'Scenario00.txt';
+    }
     fetch(txt)
     .then(response => {
       if (!response.ok) {
@@ -20,14 +24,19 @@ export class Data{
       return response.text();
     })
     .then(textData => {
+      console.log("Cargando datos...");
       let cube = []; 
       textData.split('\n').forEach(line => {
         line.split(',').forEach(element => {
           cube.push(parseFloat(element));
         });
-        data.push(cube);
-        cube = []; 
+        if(cube.length == 6){
+          data.push(cube);
+          cube = []; 
+        }
       });
+      console.log("Se han cargado " + data.length + " datos");
+      console.log(data);
       return data;
     })
     .catch(error => {
