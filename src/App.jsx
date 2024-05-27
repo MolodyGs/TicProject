@@ -1,37 +1,75 @@
 import { useState } from 'react'
 // import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+// import viteLogo from '/vite.svg'
+import { useEffect } from 'react';
 import './App.css'
-import { Data } from './data/Data'
+import { Filter } from './filter/Filter'
 
 function App() {
-  const [count, setCount] = useState(0)
 
-  const data = new Data();
-  data.load('Scenario00.txt');
+  const [data, setdata] = useState([1,2,3]);
+  const [scenario, setScenario] = useState("Scenario00.txt");
 
+  async function loadData(txt){
+    setdata([]);
+    try{
+      const filter2 = new Filter();
+      const cubesData = await filter2.loadFilter(txt, -1, -1);
+      setdata(cubesData);
+    }catch(error){
+      console.error('Error al cargar el archivo:', error);
+    }
+  }
+
+  useEffect(() => {
+    loadData("");
+  }, [])
+
+  useEffect(() => {
+    loadData(scenario);
+  }, [scenario])
+console.log(scenario )
   return (
     <>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          {/* <img src={reactLogo} className="logo react" alt="React logo" /> */}
-        </a>
+        <p>Cargar datos de: </p>
+        <select name="" id="" onChange={(event) => setScenario(event.target.value)}>
+          <option value="Scenario00.txt">Scenario00.txt</option>
+          <option value="Scenario01.txt">Scenario01.txt</option>
+          <option value="Scenario02.txt">Scenario02.txt</option>
+          <option value="Scenario03.txt">Scenario03.txt</option>
+          <option value="Scenario04.txt">Scenario04.txt</option>
+          <option value="Scenario05.txt">Scenario05.txt</option>
+          <option value="Scenario06.txt">Scenario06.txt</option>
+          <option value="Scenario07.txt">Scenario07.txt</option>
+          <option value="Scenario08.txt">Scenario08.txt</option>
+          <option value="Scenario09.txt">Scenario09.txt</option>
+        </select>
+        <table className='tabla'>
+          <thead>
+            <tr>
+              <th>X</th>
+              <th>Y</th>
+              <th>Z</th>
+              <th>Bloque</th>
+              <th>Mineral 1</th>
+              <th>Mineral 2</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((item, index) => (
+              <tr key={index}>
+                <td>{item[0]}</td>
+                <td>{item[1]}</td>
+                <td>{item[2]}</td>
+                <td>{item[3]}</td>
+                <td>{item[4]}</td>
+                <td>{item[5]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }

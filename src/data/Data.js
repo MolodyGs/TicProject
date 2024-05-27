@@ -1,22 +1,16 @@
 
-let data;
-
-
+let data = [];
 export class Data{
   constructor() {
     data = [];
   }
 
-  getData(){
-    return data;
-  }
-
-  load(txt){
-
-    if(txt == null){
+  async load(txt){
+    data = [];
+    if(txt == null || txt == ""){
       txt = 'Scenario00.txt';
     }
-    fetch(txt)
+    await fetch(txt)
     .then(response => {
       if (!response.ok) {
         throw new Error('Error al cargar el archivo');
@@ -26,6 +20,7 @@ export class Data{
     .then(textData => {
       console.log("Cargando datos...");
       let cube = []; 
+      data = [];
       textData.split('\n').forEach(line => {
         line.split(',').forEach(element => {
           cube.push(parseFloat(element));
@@ -37,11 +32,12 @@ export class Data{
       });
       console.log("Se han cargado " + data.length + " datos");
       console.log(data);
-      return data;
     })
     .catch(error => {
       console.error('Error al cargar el archivo:', error);
     });
+
+    return data;
   }
 
 }
