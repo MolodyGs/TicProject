@@ -7,10 +7,13 @@ export class MinePlan{
     
   }
 
+  //Si period = -1, entonces es que no se requiere ningún periodo.
   async loadPeriod(txt, period){
     
+    //...
     //Lógica para cargar periodo
-    const cubesData = await data.load(txt);
-    return cubesData;
+    //...
+
+    return await data.load(txt);
   }
 }

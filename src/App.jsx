@@ -10,11 +10,13 @@ function App() {
   const [data, setdata] = useState([1,2,3]);
   const [scenario, setScenario] = useState("Scenario00.txt");
 
+  //Carga los datos a traves de la clase Filter
   async function loadData(txt){
     setdata([]);
     try{
-      const filter2 = new Filter();
-      const cubesData = await filter2.loadFilter(txt, -1, -1);
+      const filter = new Filter();
+      //-1 Para el periodo y -1 para el filtro. Esto indicando que no quedemos revisar un periodo o filtrar datos.
+      const cubesData = await filter.loadFilter(txt, -1, -1);
       setdata(cubesData);
     }catch(error){
       console.error('Error al cargar el archivo:', error);

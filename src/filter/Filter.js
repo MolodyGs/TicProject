@@ -7,11 +7,13 @@ export class Filter{
     
   }
 
+  //Si filterType = -1, entonces es que no se requiere ningún filtro.
   loadFilter( txt, period, filterType){
     
+    //...
     //Lógica para el filtro de datos
-    const data = minePlan.loadPeriod(txt, period);
-    console.log(data);
-    return data;
+    //...
+    
+    return minePlan.loadPeriod(txt, period);
   }
 }

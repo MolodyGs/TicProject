@@ -1,10 +1,12 @@
 
 let data = [];
+
 export class Data{
   constructor() {
     data = [];
   }
 
+  //Carga los datos de un txt en particular
   async load(txt){
     data = [];
     if(txt == null || txt == ""){
