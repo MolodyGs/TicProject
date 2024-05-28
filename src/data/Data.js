@@ -12,7 +12,7 @@ export class Data{
     if(txt == null || txt == ""){
       txt = 'Scenario00.txt';
     }
-    await fetch(txt)
+    await fetch("src/assets/" + txt)
     .then(response => {
       if (!response.ok) {
         throw new Error('Error al cargar el archivo');
