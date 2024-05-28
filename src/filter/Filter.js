@@ -8,12 +8,15 @@ export class Filter{
   }
 
   //Si filterType = -1, entonces es que no se requiere ningún filtro.
-  loadFilter( txt, period, filterType){
+  async loadFilter( txt, period, filterType){
     
+    //Obtenemos los datos desde MinePlan para ser filtrados
+    const filtedData = await minePlan.loadPeriod(txt, period);
+
     //...
     //Lógica para el filtro de datos
     //...
     
-    return minePlan.loadPeriod(txt, period);
+    return filtedData;
   }
 }

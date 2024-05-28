@@ -38,8 +38,6 @@ export class Data{
     .catch(error => {
       console.error('Error al cargar el archivo:', error);
     });
-
     return data;
   }
-
 }
