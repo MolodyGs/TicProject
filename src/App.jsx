@@ -7,8 +7,9 @@ import { Filter } from './filter/Filter'
 
 function App() {
 
-  const [data, setdata] = useState([1,2,3]);
+  const [data, setdata] = useState([]);
   const [scenario, setScenario] = useState("Scenario00.txt");
+  const [isMinePlan, setIsMinePlan] = useState(false);
 
   //Carga los datos a traves de la clase Filter
   async function loadData(txt){
@@ -24,10 +25,7 @@ function App() {
   }
 
   useEffect(() => {
-    loadData("");
-  }, [])
-
-  useEffect(() => {
+    setIsMinePlan(scenario === "MinePlan.txt");
     loadData(scenario);
   }, [scenario])
 console.log(scenario )
@@ -46,27 +44,51 @@ console.log(scenario )
           <option value="Scenario07.txt">Scenario07.txt</option>
           <option value="Scenario08.txt">Scenario08.txt</option>
           <option value="Scenario09.txt">Scenario09.txt</option>
+          <option value="MinePlan.txt">MinePlan.txt</option>
+
         </select>
         <table className='tabla'>
           <thead>
-            <tr>
-              <th>X</th>
-              <th>Y</th>
-              <th>Z</th>
-              <th>Bloque</th>
-              <th>Mineral 1</th>
-              <th>Mineral 2</th>
+          <tr>
+              {isMinePlan ? (
+                <>
+                  <th>Period</th>
+                  <th>XIndex</th>
+                  <th>YIndex</th>
+                  <th>ZIndex</th>
+                </>
+              ) : (
+                <>
+                  <th>X</th>
+                  <th>Y</th>
+                  <th>Z</th>
+                  <th>Bloque</th>
+                  <th>Mineral 1</th>
+                  <th>Mineral 2</th>
+                </>
+              )}
             </tr>
           </thead>
           <tbody>
             {data.map((item, index) => (
               <tr key={index}>
-                <td>{item[0]}</td>
-                <td>{item[1]}</td>
-                <td>{item[2]}</td>
-                <td>{item[3]}</td>
-                <td>{item[4]}</td>
-                <td>{item[5]}</td>
+{isMinePlan ? (
+                  <>
+                    <td>{isNaN(item[0]) ? '' : item[0]}</td>
+                    <td>{isNaN(item[1]) ? '' : item[1]}</td>
+                    <td>{isNaN(item[2]) ? '' : item[2]}</td>
+                    <td>{isNaN(item[3]) ? '' : item[3]}</td>
+                  </>
+                ) : (
+                  <>
+                    <td>{isNaN(item[0]) ? '' : item[0]}</td>
+                    <td>{isNaN(item[1]) ? '' : item[1]}</td>
+                    <td>{isNaN(item[2]) ? '' : item[2]}</td>
+                    <td>{isNaN(item[3]) ? '' : item[3]}</td>
+                    <td>{isNaN(item[4]) ? '' : item[4]}</td>
+                    <td>{isNaN(item[5]) ? '' : item[5]}</td>
+                  </>
+                )}
               </tr>
             ))}
           </tbody>
