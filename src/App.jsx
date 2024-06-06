@@ -1,6 +1,7 @@
 import { useState } from 'react'
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
+import { Visualization } from './visualization/Visualization.js'
 import { useEffect } from 'react';
 import './App.css'
 import { Filter } from './filter/Filter'
@@ -9,7 +10,11 @@ function App() {
 
   const [data, setdata] = useState([1,2,3]);
   const [scenario, setScenario] = useState("Scenario00.txt");
+  const [isMinePlan, setIsMinePlan] = useState(false);
+  const [period, setPeriod] = useState(-1);  // Periodo inicial sin filtro
 
+  const visualization = new Visualization();
+  
   //Carga los datos a traves de la clase Filter
   async function loadData(txt){
     setdata([]);
@@ -18,6 +23,9 @@ function App() {
       //-1 Para el periodo y -1 para el filtro. Esto indicando que no quedemos revisar un periodo o filtrar datos.
       const cubesData = await filter.loadFilter(txt, -1, -1);
       setdata(cubesData);
+      visualization.loadVisualization(cubesData);
+      console.log("Se han cargado " + cubesData.length + " cubos");
+
     }catch(error){
       console.error('Error al cargar el archivo:', error);
     }
@@ -29,11 +37,11 @@ function App() {
 
   useEffect(() => {
     loadData(scenario);
-  }, [scenario])
-console.log(scenario )
+  }, [scenario, period])
+
   return (
     <>
-      <div>
+      {/* <div>
         <p>Cargar datos de: </p>
         <select name="" id="" onChange={(event) => setScenario(event.target.value)}>
           <option value="Scenario00.txt">Scenario00.txt</option>
@@ -61,17 +69,29 @@ console.log(scenario )
           <tbody>
             {data.map((item, index) => (
               <tr key={index}>
-                <td>{item[0]}</td>
-                <td>{item[1]}</td>
-                <td>{item[2]}</td>
-                <td>{item[3]}</td>
-                <td>{item[4]}</td>
-                <td>{item[5]}</td>
-              </tr>
+              {isMinePlan ? (
+                <>
+                  <td>{isNaN(item.period) ? '' : item.period}</td>
+                  <td>{isNaN(item.xIndex) ? '' : item.xIndex}</td>
+                  <td>{isNaN(item.yIndex) ? '' : item.yIndex}</td>
+                  <td>{isNaN(item.zIndex) ? '' : item.zIndex}</td>
+                </>
+              ) : (
+                <>
+                  <td>{item[0]}</td>
+                  <td>{item[1]}</td>
+                  <td>{item[2]}</td>
+                  <td>{item[3]}</td>
+                  <td>{item[4]}</td>
+                  <td>{item[5]}</td>
+                </>
+              )}
+            </tr>
+
             ))}
           </tbody>
         </table>
-      </div>
+      </div> */}
     </>
   )
 }
