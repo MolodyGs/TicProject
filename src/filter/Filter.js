@@ -11,12 +11,22 @@ export class Filter{
   async loadFilter( txt, period, filterType){
     
     //Obtenemos los datos desde MinePlan para ser filtrados
-    const filtedData = await minePlan.loadPeriod(txt, period);
+    const {periodData, sceneData} = await minePlan.loadPeriod(txt);
 
-    //...
-    //Lógica para el filtro de datos
-    //...
+    let periods = [];
+
+    //Añadir al array periods cuantos periodos distintos existen en el array periodData
+
+    let initialPeriod = null;
+
+    periodData.forEach(line => {
+      if(line.periodo != initialPeriod){
+        initialPeriod = line.periodo;
+        periods.push(initialPeriod);
+
+      }
+    });
     
-    return filtedData;
+    return {sceneData, periods};
   }
 }

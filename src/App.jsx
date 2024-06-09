@@ -12,8 +12,10 @@ function App() {
   const [scenario, setScenario] = useState("Scenario00.txt");
   const [isMinePlan, setIsMinePlan] = useState(false);
   const [period, setPeriod] = useState(-1);  // Periodo inicial sin filtro
+  const [periods, setPeriods] = useState(null);
 
   const visualization = new Visualization();
+
   
   //Carga los datos a traves de la clase Filter
   async function loadData(txt){
@@ -21,22 +23,24 @@ function App() {
     try{
       const filter = new Filter();
       //-1 Para el periodo y -1 para el filtro. Esto indicando que no quedemos revisar un periodo o filtrar datos.
-      const cubesData = await filter.loadFilter(txt, -1, -1);
-      setdata(cubesData);
-      visualization.loadVisualization(cubesData);
-      console.log("Se han cargado " + cubesData.length + " cubos");
+      const {sceneData, periods} = await filter.loadFilter(txt, -1, -1);
+      setPeriods(periods);
+      setdata(sceneData);
+      visualization.loadVisualization(sceneData);
+      console.log("Se han cargado " + sceneData.length + " cubos");
+
 
     }catch(error){
       console.error('Error al cargar el archivo:', error);
     }
   }
 
-  useEffect(() => {
-    loadData("");
-  }, [])
+  // useEffect(() => {
+  //   loadData("");
+  // }, [])
 
   useEffect(() => {
-    loadData(scenario);
+      loadData(scenario);
   }, [scenario, period])
 
   return (
@@ -92,6 +96,16 @@ function App() {
           </tbody>
         </table>
       </div> */}
+
+      <div style={{border: "2px solid red", padding:"5px", display: 'flex', gap:"5px"}}>
+        {periods ? (<>
+        {periods.map( per => {
+          return (
+            <h2 style={{margin: "0"}}>{per}</h2>
+          )
+        })}
+        </>): (<>Periods llega vacio????</>)}
+      </div>
     </>
   )
 }

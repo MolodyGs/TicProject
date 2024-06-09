@@ -2,8 +2,17 @@
 let data = [];
 
 export class Data{
+
+  minePlanData = null;
+
   constructor() {
     data = [];
+
+    (async () => {
+      this.minePlanData = await this.readMinePlan();
+    })();
+
+
   }
 
   //Carga los datos de un txt en particular
@@ -39,5 +48,25 @@ export class Data{
       console.error('Error al cargar el archivo:', error);
     });
     return data;
+  }
+
+  async readMinePlan(){
+    //Leer archivo MinePlan.txt
+    //period,X,Y,Z
+
+  
+    const res = await fetch("src/assets/MinePlan.txt" );
+
+    const textData = await res.text();
+
+    let minePlan = [];
+    textData.split('\n').forEach(line => {
+      if(line !== ""){
+        const [periodo, x, y, z] = line.split(',').map(Number);
+        minePlan.push({periodo, x, y, z});
+      }
+    });
+
+    return minePlan;
   }
 }
