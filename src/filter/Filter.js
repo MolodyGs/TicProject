@@ -1,40 +1,75 @@
+import { MinePlan } from "../minePlan/MinePlan.js";
+
+let minePlan = new MinePlan();
+
 export class Filter {
-  constructor() {}
+  constructor() { }
 
-  async loadFilter(txt, period, filterType) {
-    const filteredData = await minePlan.loadPeriod(txt, period);
+  async loadFilter(txt, period, lawRange, rockType, metalType) {
+    // Obtener los datos del escenario según el periodo
+    const periodData = await minePlan.loadPeriod(txt, period);
 
-    if (filterType === -1) {
-      return filteredData;
-    }
+    // Filtrar por ley
+    const filteredByLaw = periodData.filter(cube => {
+      const law = ((cube[4] + cube[5]) / cube[3]) * 100;
+      return law >= lawRange[0] && law <= lawRange[1];
+    });
 
-    const typeBConditions = (x, z) => {
-      // Aquí van las condiciones para los bloques de tipo B
+    // Filtrar por tipo de roca
+    const filteredByRock = filteredByLaw.filter(cube => {
+      const [xIndex, , zIndex] = cube;
+      let typeOfBlock = 'A';
+      // Condiciones dadas por el archivo RockTypes
       if (
-        (z == 1 && ((x <= 2) || (x >= 6 && x <= 9) || (x >= 13 && x <= 14) || (x >= 18 && x <= 19) || (x >= 23 && x <= 25) || (x >= 29 && x <= 30) || (x >= 35))) ||
-        (z == 2 && ((x <= 2) || (x >= 6 && x <= 8) || (x >= 13 && x <= 14) || (x >= 18 && x <= 19) || (x >= 23 && x <= 24) || (x >= 29 && x <= 30) || (x >= 34))) ||
-        (z == 3 && ((x <= 1) || (x >= 5 && x <= 8) || (x >= 12 && x <= 14) || (x >= 17 && x <= 18) || (x >= 22 && x <= 23) || (x >= 28 && x <= 29) || (x >= 35))) ||
-        (z == 4 && ((x <= 1) || (x >= 5 && x <= 7) || (x >= 12 && x <= 13) || (x >= 17 && x <= 18) || (x >= 22 && x <= 23) || (x >= 27 && x <= 28) || (x >= 35))) ||
-        (z == 5 && ((x >= 5 && x <= 7) || (x >= 11 && x <= 13) || (x >= 17 && x <= 18) || (x >= 22 && x <= 23) || (x >= 27 && x <= 28) || (x == 32) || (x >= 35))) ||
-        (z == 6 && ((x >= 4 && x <= 6) || (x >= 11 && x <= 13) || (x == 17) || (x >= 21 && x <= 22) || (x >= 27 && x <= 28) || (x == 32) || (x >= 35))) ||
-        (z == 7 && ((x >= 4 && x <= 5) || (x >= 11 && x <= 13) || (x >= 16 && x <= 17) || (x >= 20 && x <= 22) || (x >= 26 && x <= 27) || (x == 31) || (x == 35))) ||
-        (z == 8 && ((x == 1) || (x >= 3 && x <= 5) || (x == 7) || (x >= 11 && x <= 12) || (x == 16) || (x >= 20 && x <= 21) || (x >= 26 && x <= 27) || (x == 31) || (x >= 34 && x <= 35))) ||
-        (z == 9 && ((x <= 6) || (x >= 10 && x <= 16) || (x >= 19 && x <= 22) || (x >= 26 && x <= 28) || (x == 31) || (x >= 34 && x <= 35))) ||
-        (z == 10 && ((x <= 4) || (x >= 9 && x <= 14) || (x >= 19 && x <= 20) || (x >= 25 && x <= 27) || (x == 31) || (x == 33))) ||
-        (z == 11 && ((x <= 3) || (x >= 8 && x <= 13) || (x >= 17 && x <= 20) || (x >= 24 && x <= 26) || (x >= 30 && x <= 32))) ||
-        (z == 12)
+        (zIndex == 1 && ((xIndex <= 2) || (xIndex >= 6 && xIndex <= 9) || (xIndex >= 13 && xIndex <= 14) || (xIndex >= 18 && xIndex <= 19) || (xIndex >= 23 && xIndex <= 25) || (xIndex >= 29 && xIndex <= 30) || (xIndex >= 35))) ||
+        (zIndex == 2 && ((xIndex <= 2) || (xIndex >= 6 && xIndex <= 8) || (xIndex >= 13 && xIndex <= 14) || (xIndex >= 18 && xIndex <= 19) || (xIndex >= 23 && xIndex <= 24) || (xIndex >= 29 && xIndex <= 30) || (xIndex >= 34))) ||
+        (zIndex == 3 && ((xIndex <= 1) || (xIndex >= 5 && xIndex <= 8) || (xIndex >= 12 && xIndex <= 14) || (xIndex >= 17 && xIndex <= 18) || (xIndex >= 22 && xIndex <= 23) || (xIndex >= 28 && xIndex <= 29) || (xIndex >= 35))) ||
+        (zIndex == 4 && ((xIndex <= 1) || (xIndex >= 5 && xIndex <= 7) || (xIndex >= 12 && xIndex <= 13) || (xIndex >= 17 && xIndex <= 18) || (xIndex >= 22 && xIndex <= 23) || (xIndex >= 27 && xIndex <= 28) || (xIndex >= 35))) ||
+        (zIndex == 5 && ((xIndex >= 5 && xIndex <= 7) || (xIndex >= 11 && xIndex <= 13) || (xIndex >= 17 && xIndex <= 18) || (xIndex >= 22 && xIndex <= 23) || (xIndex >= 27 && xIndex <= 28) || (xIndex == 32) || (xIndex >= 35))) ||
+        (zIndex == 6 && ((xIndex >= 4 && xIndex <= 6) || (xIndex >= 11 && xIndex <= 13) || (xIndex == 17) || (xIndex >= 21 && xIndex <= 22) || (xIndex >= 27 && xIndex <= 28) || (xIndex == 32) || (xIndex >= 35))) ||
+        (zIndex == 7 && ((xIndex >= 4 && xIndex <= 5) || (xIndex >= 11 && xIndex <= 13) || (xIndex >= 16 && xIndex <= 17) || (xIndex >= 20 && xIndex <= 22) || (xIndex >= 26 && xIndex <= 27) || (xIndex == 31) || (xIndex == 35))) ||
+        (zIndex == 8 && ((xIndex == 1) || (xIndex >= 3 && xIndex <= 5) || (xIndex == 7) || (xIndex >= 11 && xIndex <= 12) || (xIndex == 16) || (xIndex >= 20 && xIndex <= 21) || (xIndex >= 26 && xIndex <= 27) || (xIndex == 31) || (xIndex >= 34 && xIndex <= 35))) ||
+        (zIndex == 9 && ((xIndex <= 6) || (xIndex >= 10 && xIndex <= 16) || (xIndex >= 19 && xIndex <= 22) || (xIndex >= 26 && xIndex <= 28) || (xIndex == 31) || (xIndex >= 34 && xIndex <= 35))) ||
+        (zIndex == 10 && ((xIndex <= 4) || (xIndex >= 9 && xIndex <= 14) || (xIndex == 18) || (xIndex >= 23 && xIndex <= 24) || (xIndex >= 30 && xIndex <= 31) || (xIndex >= 34 && xIndex <= 35))) ||
+        (zIndex == 11 && ((xIndex >= 4 && xIndex <= 5) || (xIndex >= 9 && xIndex <= 12) || (xIndex >= 16 && xIndex <= 17) || (xIndex == 22) || (xIndex >= 31 && xIndex <= 32) || (xIndex == 34))) ||
+        (zIndex == 12 && ((xIndex == 1) || (xIndex >= 4 && xIndex <= 5) || (xIndex >= 9 && xIndex <= 11) || (xIndex == 15) || (xIndex >= 21 && xIndex <= 22) || (xIndex >= 30 && xIndex <= 31) || (xIndex == 34))) ||
+        (zIndex == 13 && ((xIndex == 1) || (xIndex >= 4 && xIndex <= 5) || (xIndex == 9) || (xIndex >= 21 && xIndex <= 22) || (xIndex >= 30 && xIndex <= 31) || (xIndex == 34))) ||
+        (zIndex == 14 && ((xIndex == 4) || (xIndex >= 9 && xIndex <= 10) || (xIndex >= 21 && xIndex <= 22) || (xIndex >= 30 && xIndex <= 31) || (xIndex == 34))) ||
+        (zIndex == 15 && ((xIndex == 1) || (xIndex == 4) || (xIndex == 9) || (xIndex == 15) || (xIndex >= 21 && xIndex <= 22) || (xIndex >= 30 && xIndex <= 31) || (xIndex == 34))) ||
+        (zIndex == 16 && ((xIndex == 0) || (xIndex == 4) || (xIndex == 9) || (xIndex >= 14 && xIndex <= 15) || (xIndex >= 21 && xIndex <= 22) || (xIndex >= 29 && xIndex <= 31) || (xIndex == 34))) ||
+        (zIndex == 17 && ((xIndex == 1) || (xIndex == 4) || (xIndex == 9) || (xIndex == 14) || (xIndex >= 21 && xIndex <= 22) || (xIndex >= 30 && xIndex <= 31) || (xIndex >= 34))) ||
+        (zIndex == 18 && ((xIndex == 1) || (xIndex >= 4 && xIndex <= 5) || (xIndex == 9) || (xIndex == 13) || (xIndex >= 21 && xIndex <= 22) || (xIndex == 30) || (xIndex >= 34))) ||
+        (zIndex == 19 && ((xIndex == 1) || (xIndex >= 4 && xIndex <= 5) || (xIndex == 9) || (xIndex == 13) || (xIndex >= 22 && xIndex <= 23) || (xIndex == 30) || (xIndex == 34))) ||
+        (zIndex == 20 && ((xIndex == 1) || (xIndex >= 4 && xIndex <= 5) || (xIndex == 9) || (xIndex == 13) || (xIndex == 22) || (xIndex == 30) || (xIndex >= 33 && xIndex <= 34))) ||
+        (zIndex == 21 && ((xIndex == 1) || (xIndex >= 4 && xIndex <= 5) || (xIndex == 9) || (xIndex == 13) || (xIndex >= 21 && xIndex <= 22) || (xIndex == 30) || (xIndex >= 33 && xIndex <= 34))) ||
+        (zIndex == 22 && ((xIndex == 1) || (xIndex >= 4 && xIndex <= 5) || (xIndex == 9) || (xIndex == 12) || (xIndex >= 21 && xIndex <= 22) || (xIndex == 30) || (xIndex == 33))) ||
+        (zIndex == 23 && ((xIndex == 1) || (xIndex >= 4 && xIndex <= 5) || (xIndex == 9) || (xIndex >= 21 && xIndex <= 22) || (xIndex == 30) || (xIndex >= 32 && xIndex <= 33))) ||
+        (zIndex == 24 && ((xIndex == 1) || (xIndex >= 4 && xIndex <= 5) || (xIndex == 9) || (xIndex >= 21 && xIndex <= 22) || (xIndex == 30) || (xIndex >= 32 && xIndex <= 33))) ||
+        (zIndex == 25 && ((xIndex == 1) || (xIndex >= 4 && xIndex <= 5) || (xIndex == 9) || (xIndex >= 21 && xIndex <= 22) || (xIndex == 30) || (xIndex == 33))) ||
+        (zIndex == 26 && ((xIndex == 1) || (xIndex >= 4 && xIndex <= 5) || (xIndex == 9) || (xIndex >= 21 && xIndex <= 22) || (xIndex == 30) || (xIndex >= 32 && xIndex <= 33))) ||
+        (zIndex == 27 && ((xIndex == 1) || (xIndex >= 4 && xIndex <= 5) || (xIndex == 9) || (xIndex == 22) || (xIndex == 30) || (xIndex >= 32 && xIndex <= 33))) ||
+        (zIndex == 28 && ((xIndex == 1) || (xIndex >= 4 && xIndex <= 5) || (xIndex == 9) || (xIndex == 22) || (xIndex == 30) || (xIndex >= 32 && xIndex <= 33))) ||
+        (zIndex == 29 && ((xIndex == 1) || (xIndex >= 4 && xIndex <= 5) || (xIndex == 22) || (xIndex == 30) || (xIndex >= 32 && xIndex <= 33))) ||
+        (zIndex == 30 && ((xIndex == 1) || (xIndex >= 4 && xIndex <= 5) || (xIndex == 22) || (xIndex == 30) || (xIndex == 32) || (xIndex == 33))) ||
+        (zIndex == 31 && ((xIndex == 1) || (xIndex >= 4 && xIndex <= 5) || (xIndex == 22) || (xIndex == 30) || (xIndex == 32) || (xIndex == 33))) ||
+        (zIndex == 32 && ((xIndex == 1) || (xIndex >= 4 && xIndex <= 5) || (xIndex == 21) || (xIndex == 30) || (xIndex >= 32 && xIndex <= 33))) ||
+        (zIndex == 33 && ((xIndex == 1) || (xIndex >= 4 && xIndex <= 5) || (xIndex == 21) || (xIndex == 30) || (xIndex >= 32 && xIndex <= 33))) ||
+        (zIndex == 34 && ((xIndex == 1) || (xIndex == 4) || (xIndex == 21) || (xIndex == 30) || (xIndex == 32))) ||
+        (zIndex == 35 && ((xIndex == 1) || (xIndex == 4) || (xIndex == 21) || (xIndex == 30) || (xIndex == 32)))
       ) {
-        return true;
+        typeOfBlock = 'B';
       }
+      return rockType === "todos" || rockType === typeOfBlock;
+    });
+
+    // Filtrar por tipo de metal
+    const filteredByMetal = filteredByRock.filter(cube => {
+      if (metalType === "todos") return true;
+      if (metalType === "oro" && cube[4] > 0) return true;
+      if (metalType === "plata" && cube[5] > 0) return true;
       return false;
-    };
+    });
 
-    if (filterType === "A") {
-      return filteredData.filter(cube => !typeBConditions(cube[0], cube[2]));
-    } else if (filterType === "B") {
-      return filteredData.filter(cube => typeBConditions(cube[0], cube[2]));
-    }
-
-    return filteredData;
+    return filteredByMetal;
   }
 }
