@@ -3,16 +3,17 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 export class Visualization {
   loadVisualization = (cubesData) => {
+    const container = document.getElementById('3d-visualization');
+    if (!container) return;
+
     const scene = new THREE.Scene();
     scene.background = new THREE.Color('#FFFFFF');
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(90, container.offsetWidth / container.offsetHeight, 0.1, 1000);
 
     const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(1920, window.innerHeight);
-    if (document.querySelector("body canvas")) {
-      document.querySelector("body canvas").parentNode.removeChild(document.querySelector("body canvas"));
-    }
-    document.body.appendChild(renderer.domElement);
+    renderer.setSize(container.offsetWidth, container.offsetHeight);
+    container.innerHTML = ''; // Clear previous content
+    container.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
     const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
@@ -64,7 +65,10 @@ export class Visualization {
       scene.add(cubeGroup);
     });
 
-    camera.position.z = 30;
+    camera.position.z = 15;
+    camera.position.x = 30;
+    camera.position.y = 30;
+
 
     function animate() {
       requestAnimationFrame(animate);
@@ -73,15 +77,43 @@ export class Visualization {
     }
 
     animate();
+  }
 
-    const filterCubes = (type) => {
-      cubesToScreen.forEach(cube => {
-        if (type === 'todos' || cube.type === type) {
-          cube.visible = true;
-        } else {
-          cube.visible = false;
-        }
-      });
-    };
+  visualizeVerticalMine = (cubesData) => {
+    const container = document.getElementById('upl-visualization');
+    if (!container) return;
+
+    // Limpia el contenedor antes de renderizar
+    container.innerHTML = '';
+
+    const width = 200;
+    const height = 400;
+
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", width);
+    svg.setAttribute("height", height);
+
+    const minY = Math.min(...cubesData.map(cube => cube[1]));
+    const maxY = Math.max(...cubesData.map(cube => cube[1]));
+    const yRange = maxY - minY;
+
+    cubesData.forEach(cube => {
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      const normalizedY = (cube[1] - minY) / yRange;
+      rect.setAttribute("x", 10);
+      rect.setAttribute("y", height - (normalizedY * height));
+      rect.setAttribute("width", 20);
+      rect.setAttribute("height", 10);
+      rect.setAttribute("fill", this.getColorFromLaw(cube[3]));
+
+      svg.appendChild(rect);
+    });
+
+    container.appendChild(svg);
+  }
+
+  getColorFromLaw(law) {
+    const colorValue = Math.floor((1 - law) * 255);
+    return `rgb(255, ${colorValue}, ${colorValue})`;
   }
 }
