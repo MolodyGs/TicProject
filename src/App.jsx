@@ -51,7 +51,7 @@ function App() {
   return (
     <div className="d-flex">
       <div className="bg-light border-right" id="sidebar-wrapper" style={{ minWidth: '250px', fontFamily: 'Arial, sans-serif' }}>
-        <div className="text-center mt-4">
+      <div className="text-center mt-4">
           <img src="https://1000logos.net/wp-content/uploads/2020/07/BHP-Logo.png" alt="Logo Minero" style={{ width: '100px', height: '50px' }} />
         </div>
         <div className="sidebar-heading text-center py-4 primary-text fs-4 fw-bold border-bottom">
@@ -66,6 +66,7 @@ function App() {
             <i className="fas fa-gem mr-2"></i>
             <span> Ultimate Pit Limit</span>
           </a>
+          
         </div>
       </div>
       <div className="container-fluid">
@@ -151,16 +152,26 @@ function App() {
                   <option value="plata">Plata</option>
                 </select>
               </div>
+              <div className="card bg-light mb-3 mt-4" style={{ maxWidth: '30rem' }}>
+                <div className="card-header">UPL</div>
+                <div className="card-body">
+                  <h5 className="card-title">Valores</h5>
+                  <p>
+                    <i className="fas fa-dollar-sign mr-2"></i> UPL: <span className={upl !== null && upl < 0 ? 'text-danger' : 'text-success'}>
+                      {upl !== null && typeof upl === 'number' ? `${upl.toFixed(2)} USD` : 'Cargando...'}
+                    </span>
+                  </p>
+                  <p>
+                    <i className="fas fa-dollar-sign mr-2"></i> Coste Total de Extracción: {extractionCost !== null && typeof extractionCost === 'number' ? `${extractionCost.toFixed(2)} USD` : 'Cargando...'}
+                  </p>
+                  <p>
+                    <i className="fas fa-dollar-sign mr-2"></i> Valor Venta Total: {totalValue !== null && typeof totalValue === 'number' ? `${totalValue.toFixed(2)} USD` : 'Cargando...'}
+                  </p>
+                </div>
+              </div>
             </div>
             <div className="col-8">
-              <div id="3d-upl-visualization" style={{ width: '100%', height: '100vh' }}></div>
-              {upl !== null && (
-                <div>
-                  <h3>Ultimate Pit Limit (UPL): {upl}</h3>
-                  <h4>Total Extraction Cost: {extractionCost}</h4>
-                  <h4>Total Value: {totalValue}</h4>
-                </div>
-              )}
+              <div id="upl-visualization" style={{ width: '100%', height: '100vh' }}></div>
             </div>
           </div>
         )}
