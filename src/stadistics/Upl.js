@@ -1,26 +1,3 @@
-export const calculateUpl = (cubesData, mineralPrice, extractionCost) => {
-  let uplValue = -30000000;
-  let totalExtractionCost = 30000000;
-  let totalValue = 0;
-  if (cubesData.length === 0){
-    uplValue = 0;
-    totalExtractionCost = 0;
-    totalValue = 0;
-  }
-
-  cubesData.forEach(cube => {
-    const [x, y, z, weight, mineral1, mineral2] = cube;
-    const mineralValue = (mineral1 + mineral2) * mineralPrice;
-    const blockCost = extractionCost;
-
-    uplValue += mineralValue - blockCost;
-    totalValue += mineralValue;
-    totalExtractionCost += blockCost;
-  });
-
-  return { uplValue, totalExtractionCost, totalValue };
-};
-
 
 export const visualizeVerticalMine = (uplData, elementId) => {
   const container = document.getElementById(elementId);
