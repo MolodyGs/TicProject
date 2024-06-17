@@ -13,62 +13,20 @@ function App() {
 
   return (
     <>
-      <div
-        className="d-flex animation"
-        style={
-          loading
-            ? {
-                filter: 'blur(10px) brightness(0.7)',
-                pointerEvents: 'none',
-                transitionDuration: '0.2s',
-                opacity: 0.5,
-                backgroundColor: 'rgba(255, 255, 255)',
-              }
-            : {
-                transitionDuration: '0.2s',
-                filter: 'brightness(0.9)',
-                backgroundColor: 'rgba(255, 255, 255)',
-              }
-        }
-      >
+      <div className={loading ? 'd-flex backgroud-blur' : 'd-flex'}>
         <Sidebar />
         <div className="container-fluid">
           <AppRoutes setLoading={setLoading} />
         </div>
       </div>
-      {loading ? (
-        <div
-          style={{
-            width: 300,
-            height: 300,
-            backgroundColor: 'white',
-            boxShadow: '0 10px 10px rgba(0, 0, 0, 0.1)',
-            borderRadius: 10,
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-          }}
-        >
-          <p
-            style={{
-              textAlign: 'center',
-              padding: 0,
-              marginBottom: 60,
-              marginRight: 0,
-              maringLeft: 0,
-              color: 'grey',
-            }}
-          >
-            Cargando datos
-          </p>
-          <CircularProgress />
-        </div>
-      ) : null}
+      <div
+        className={
+          loading ? 'animation-in loading-view' : 'animation-out loading-view'
+        }
+      >
+        <p className="loading-text">Cargando datos...</p>
+        <CircularProgress />
+      </div>
     </>
   );
 }
