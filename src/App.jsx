@@ -57,7 +57,10 @@ function App() {
           <p
             style={{
               textAlign: 'center',
+              padding: 0,
               marginBottom: 60,
+              marginRight: 0,
+              maringLeft: 0,
               color: 'grey',
             }}
           >
