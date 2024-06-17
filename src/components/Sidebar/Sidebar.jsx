@@ -2,8 +2,15 @@ import PropTypes from 'prop-types';
 import Filters from '../Filters/Filters';
 import UplStats from '../UplStats/UplStats';
 import { useFilter } from '../../hooks/useFilter';
+import { useNavigate } from 'react-router-dom';
 
 function Sidebar({ setActivePage }) {
+  const navigate = useNavigate();
+
+  const handle = (route) => {
+    navigate('/' + route);
+  };
+
   const { activePage } = useFilter();
   return (
     <div
@@ -23,17 +30,17 @@ function Sidebar({ setActivePage }) {
       </div>
       <div className="list-group list-group-flush my-3">
         <a
-          href="#!"
+          href="Deposit"
           className="list-group-item list-group-item-action bg-light text-primary d-flex align-items-center"
-          onClick={() => setActivePage('yacimiento')}
+          // onClick={() => handle('Desposit')}
         >
           <i className="fas fa-mountain mr-2" />
           <span>Yacimiento</span>
         </a>
         <a
-          href="#!"
+          href="UPL"
           className="list-group-item list-group-item-action bg-light text-primary d-flex align-items-center"
-          onClick={() => setActivePage('upl')}
+          // onClick={() => handle('UPL')}
         >
           <i className="fas fa-gem mr-2" />
           <span>Ultimate Pit Limit</span>

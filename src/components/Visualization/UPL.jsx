@@ -74,14 +74,13 @@ const UPL = () => {
       const material = new THREE.MeshBasicMaterial({ color });
 
       const solidCube = new THREE.Mesh(boxGeometry, material);
-      const wireframeCube = new THREE.Mesh(
-        boxGeometry,
-        cubeWireframeMaterial.clone(),
-      );
-
+      // const wireframeCube = new THREE.Mesh(
+      //   boxGeometry,
+      //   cubeWireframeMaterial.clone(),
+      // );
       const cubeGroup = new THREE.Group();
       cubeGroup.add(solidCube);
-      cubeGroup.add(wireframeCube);
+      // cubeGroup.add(wireframeCube);
 
       cubeGroup.position.set(x, z, y);
       return cubeGroup;

@@ -8,10 +8,13 @@ const Deposit = () => {
   const containerRef = useRef(null);
 
   useEffect(() => {
+    console.log('Cargando datos');
     const container = containerRef.current;
     if (!container) return;
 
     const scene = new THREE.Scene();
+    const renderer = new THREE.WebGLRenderer();
+
     scene.background = new THREE.Color('#FFFFFF');
     const camera = new THREE.PerspectiveCamera(
       90,
@@ -20,47 +23,49 @@ const Deposit = () => {
       1000,
     );
 
-    const renderer = new THREE.WebGLRenderer();
     renderer.setSize(container.offsetWidth, container.offsetHeight);
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
+    // Crear la geometría del cubo
     const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
-    const defaultMaterial = new THREE.MeshBasicMaterial({ color: 'red' });
-    const cubeWireframeMaterial = new THREE.MeshBasicMaterial({
-      color: '#000000',
-      wireframe: true,
-    });
 
+    // Crear el material por defecto y materiales específicos
+    const defaultMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     const cubeMaterials = {
       gold: new THREE.MeshBasicMaterial({ color: 0xffd700 }),
       silver: new THREE.MeshBasicMaterial({ color: 0xc0c0c0 }),
     };
 
-    const spacing = 1;
+    // Crear el InstancedMesh para los cubos
+    const numCubes = data.length; // Suponiendo que 'data' es tu arreglo de cubos
+    const cubesMesh = new THREE.InstancedMesh(
+      boxGeometry,
+      defaultMaterial,
+      numCubes,
+    );
 
-    data.forEach((cube) => {
+    // Matriz de transformación para cada cubo
+    const matrix = new THREE.Matrix4();
+    const spacing = 2; // Espaciado entre cubos
+
+    // Configurar la posición y material para cada cubo
+    data.forEach((cube, index) => {
       let material = defaultMaterial;
 
       if (cube[4] > 0) material = cubeMaterials.gold;
       else if (cube[5] > 0) material = cubeMaterials.silver;
 
-      const solidCube = new THREE.Mesh(boxGeometry, material);
-      const wireframeCube = new THREE.Mesh(boxGeometry, cubeWireframeMaterial);
-
-      const cubeGroup = new THREE.Group();
-      cubeGroup.add(solidCube);
-      cubeGroup.add(wireframeCube);
-
-      cubeGroup.position.set(
-        cube[0] * spacing,
-        cube[1] * spacing,
-        cube[2] * spacing,
-      );
-      scene.add(cubeGroup);
+      // Establecer la posición del cubo en la matriz
+      matrix.setPosition(cube[0], cube[1], cube[2]);
+      cubesMesh.setMatrixAt(index, matrix);
     });
 
+    // Agregar el InstancedMesh a la escena
+    scene.add(cubesMesh);
+    console.log();
+    // Posicionar la cámara
     camera.position.set(30, 30, 15);
 
     const animate = () => {
