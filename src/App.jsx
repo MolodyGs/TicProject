@@ -10,13 +10,14 @@ import './App.css';
 function App() {
   // const { activePage, setActivePage } = useFilter();
   const [loading, setLoading] = useState(true);
+  const [info, setInfo] = useState('Calculando superficie...');
 
   return (
     <>
       <div className={loading ? 'd-flex backgroud-blur' : 'd-flex'}>
         <Sidebar />
         <div className="container-fluid">
-          <AppRoutes setLoading={setLoading} />
+          <AppRoutes setLoading={setLoading} setInfo={setInfo} />
         </div>
       </div>
       <div
@@ -25,6 +26,7 @@ function App() {
         }
       >
         <p className="loading-text">Cargando datos...</p>
+        <p className="loading-info">{info}</p>
         <CircularProgress />
       </div>
     </>

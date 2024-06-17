@@ -59,6 +59,8 @@ p{
   flex-direction: column;
   animation-duration: 0.6s;
   animation-fill-mode: forwards;
+  /* animation-delay: 1s; */
+  /* transform: translate(-50%, -50%); */
 }
 
 .loading-text {
@@ -67,7 +69,18 @@ p{
   margin-bottom: 60;
   margin-right: 0;
   margin-left: 0;
-  color: grey;
+  color: black;
+}
+
+.loading-info{
+  text-align: center;
+  padding: 0;
+  margin-bottom: 60;
+  margin-right: 0;
+  margin-left: 0;
+  color: #A1A1A1;
+  font-size: 16px;
+  font-weight: 200;
 }
 
 .animation-in{

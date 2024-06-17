@@ -3,8 +3,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { useFilter } from '../../hooks/useFilter';
 
-const Deposit = ({ setLoading }) => {
-  console.log('Esperando datos...');
+const Deposit = ({ setLoading, setInfo }) => {
   const { data } = useFilter();
   const containerRef = useRef(null);
 
@@ -55,6 +54,7 @@ const Deposit = ({ setLoading }) => {
     const matrix = new THREE.Matrix4();
     const spacing = 2; // Espaciado entre cubos
 
+    setInfo('Generando geometria...');
     // Configurar la posición y material para cada cubo
     data.forEach((cube, index) => {
       let material = defaultMaterial;
