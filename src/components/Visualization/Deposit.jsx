@@ -3,12 +3,17 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { useFilter } from '../../hooks/useFilter';
 
-const Deposit = () => {
+const Deposit = ({ setLoading }) => {
+  console.log('Esperando datos...');
   const { data } = useFilter();
   const containerRef = useRef(null);
 
+  if (data.length === 1531) {
+    setLoading(false);
+  }
+
   useEffect(() => {
-    console.log('Cargando datos');
+    console.log('datos cargados. Renderizando');
     const container = containerRef.current;
     if (!container) return;
 
@@ -61,10 +66,8 @@ const Deposit = () => {
       matrix.setPosition(cube[0], cube[1], cube[2]);
       cubesMesh.setMatrixAt(index, matrix);
     });
-
     // Agregar el InstancedMesh a la escena
     scene.add(cubesMesh);
-    console.log();
     // Posicionar la cámara
     camera.position.set(30, 30, 15);
 

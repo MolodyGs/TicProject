@@ -3,11 +3,17 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { useFilter } from '../../hooks/useFilter';
 
-const UPL = () => {
+const UPL = ({ setLoading }) => {
+  console.log('Esperando datos...');
   const { data, upl } = useFilter();
   const containerRef = useRef(null);
 
+  if (data.length >= 1531) {
+    setLoading(false);
+  }
+
   useEffect(() => {
+    console.log('Renderizando');
     const container = containerRef.current;
     if (!container) return;
 
@@ -80,8 +86,8 @@ const UPL = () => {
       // );
       const cubeGroup = new THREE.Group();
       cubeGroup.add(solidCube);
-      // cubeGroup.add(wireframeCube);
 
+      // cubeGroup.add(wireframeCube);
       cubeGroup.position.set(x, z, y);
       return cubeGroup;
     };
@@ -99,7 +105,6 @@ const UPL = () => {
           else if (z < 9) color = new THREE.Color('blue');
           else if (z < 11) color = new THREE.Color('indigo');
           else color = new THREE.Color('violet');
-
           const cubeGroup = createBlockGroup(x, y, z, color);
           scene.add(cubeGroup);
         }

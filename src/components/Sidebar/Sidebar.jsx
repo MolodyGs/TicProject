@@ -4,7 +4,7 @@ import UplStats from '../UplStats/UplStats';
 import { useFilter } from '../../hooks/useFilter';
 import { useNavigate } from 'react-router-dom';
 
-function Sidebar({ setActivePage }) {
+function Sidebar() {
   const navigate = useNavigate();
 
   const handle = (route) => {
@@ -59,8 +59,8 @@ function Sidebar({ setActivePage }) {
   );
 }
 
-Sidebar.propTypes = {
-  setActivePage: PropTypes.func.isRequired,
-};
+// Sidebar.propTypes = {
+//   setActivePage: PropTypes.func.isRequired,
+// };
 
 export default Sidebar;
