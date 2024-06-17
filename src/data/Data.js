@@ -1,43 +1,42 @@
-
-let data = [];
-
-export class Data{
+export class Data {
   constructor() {
-    data = [];
+    // No es necesario inicializar data aquí
   }
 
-  //Carga los datos de un txt en particular
-  async load(txt){
-    data = [];
-    if(txt == null || txt == ""){
-      txt = 'Scenario00.txt';
-    }
-    await fetch("src/assets/" + txt)
-    .then(response => {
+  async loadScenario(txt) {
+    return this.loadData(txt);
+  }
+
+  async loadMinePlan() {
+    return this.loadData('MinePlan.txt');
+  }
+
+  async loadData(txt) {
+    let data = [];
+    try {
+      const response = await fetch("src/assets/" + txt);
       if (!response.ok) {
         throw new Error('Error al cargar el archivo');
       }
-      return response.text();
-    })
-    .then(textData => {
+      const textData = await response.text();
       console.log("Cargando datos...");
-      let cube = []; 
-      data = [];
-      textData.split('\n').forEach(line => {
-        line.split(',').forEach(element => {
-          cube.push(parseFloat(element));
-        });
-        if(cube.length == 6){
-          data.push(cube);
-          cube = []; 
-        }
-      });
+      data = this.parseData(textData);
       console.log("Se han cargado " + data.length + " datos");
       console.log(data);
-    })
-    .catch(error => {
+    } catch (error) {
       console.error('Error al cargar el archivo:', error);
-    });
+    }
+    return data;
+  }
+
+  parseData(textData) {
+    let data = [];
+    let rows = textData.split('\n');
+    for (let i = 0; i < rows.length; i++) {
+      let elements = rows[i].split(',');
+      let cube = elements.map(parseFloat);
+      data.push(cube);
+    }
     return data;
   }
 }

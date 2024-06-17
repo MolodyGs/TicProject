@@ -2,21 +2,23 @@ import { Data } from '../data/Data.js';
 
 let data = new Data();
 
-export class MinePlan{
+export class MinePlan {
   constructor() {
     
   }
 
-  //Si period = -1, entonces es que no se requiere ningún periodo.
-  async loadPeriod(txt, period){
-    
-    //Obtenemos los datos desde Data para poder pasar por el periodo
-    const periodData = await data.load(txt);
-
-    //...
-    //Lógica para cargar periodo
-    //...
-
-    return periodData;
+  // Si period = -1, carga solo el escenario; si period = 0, carga el MinePlan periodo 0
+  async loadPeriod(txt, period) {
+    if (period === -1) {
+      // Cargar escenario
+      return data.loadScenario(txt);
+    } else if (period != -1) {
+      // Cargar MinePlan
+      const minePlanData = await data.loadMinePlan();
+      // Aquí puedes implementar la lógica específica para el periodo 0 del MinePlan si es necesario
+      return minePlanData;
+    } else {
+      throw new Error(`El periodo ${period} no está soportado.`);
+    }
   }
 }
