@@ -1,17 +1,18 @@
 export class Data {
   constructor() {
-    // No es necesario inicializar data aquí
+    this.minePlanData = []; // Guardar los datos del plan minero aquí
   }
 
-  async loadScenario(txt) {
-    return this.loadData(txt);
+  async loadScenario(txt, minePlanData = []) {
+    return this.loadData(txt, minePlanData); // Pasar minePlanData para filtrar
   }
 
   async loadMinePlan() {
-    return this.loadData('MinePlan.txt');
+    this.minePlanData = await this.loadData('MinePlan.txt'); // Guardar los datos del plan minero
+    return this.minePlanData;
   }
 
-  async loadData(txt) {
+  async loadData(txt, minePlanData = []) {
     let data = [];
     try {
       const response = await fetch("src/assets/" + txt);
@@ -20,7 +21,11 @@ export class Data {
       }
       const textData = await response.text();
       console.log("Cargando datos...");
-      data = this.parseData(textData);
+      if (txt === 'MinePlan.txt') {
+        data = this.parseMinePlanData(textData);
+      } else {
+        data = this.parseData(textData, minePlanData); // Pasar minePlanData para filtrar
+      }
       console.log("Se han cargado " + data.length + " datos");
       console.log(data);
     } catch (error) {
@@ -29,13 +34,40 @@ export class Data {
     return data;
   }
 
-  parseData(textData) {
+  parseData(textData, minePlanData) {
     let data = [];
     let rows = textData.split('\n');
     for (let i = 0; i < rows.length; i++) {
       let elements = rows[i].split(',');
       let cube = elements.map(parseFloat);
-      data.push(cube);
+      if (!this.checkCoordinatesMatch(cube, minePlanData)) {
+        data.push(cube); // Añadir al array si no coincide con el plan minero
+      }
+    }
+    return data;
+  }
+
+  checkCoordinatesMatch(cube, minePlanData) {
+    for (let i = 0; i < minePlanData.length; i++) {
+      const { x, y, z } = minePlanData[i];
+      if (cube[0] === x && cube[1] === y && cube[2] === z) {
+        return true; // Coincide con las coordenadas del plan minero
+      }
+    }
+    return false; // No coincide con ninguna coordenada del plan minero
+  }
+
+  parseMinePlanData(textData) {
+    let data = [];
+    let rows = textData.split('\n');
+    for (let i = 0; i < rows.length; i++) {
+      let elements = rows[i].split(',');
+      if (elements.length === 4) {
+        const [period, x, y, z] = elements.map(e => parseFloat(e));
+        if (!isNaN(period) && !isNaN(x) && !isNaN(y) && !isNaN(z)) {
+          data.push({ period, x, y, z });
+        }
+      }
     }
     return data;
   }

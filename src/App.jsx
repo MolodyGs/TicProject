@@ -24,10 +24,22 @@ function App() {
   const visualization = new Visualization();
   const uplVisualization = new UplVisualization();
 
+  const periodOptions = [
+    { value: -1, label: "Sin Filtro" },
+    { value: 0, label: "Periodo 0" },
+    { value: 1, label: "Periodo 1" },
+    { value: 2, label: "Periodo 2" },
+    { value: 3, label: "Periodo 3" },
+    { value: 4, label: "Periodo 4" },
+    { value: 5, label: "Periodo 5" }
+  ];
+
   const loadData = async () => {
     try {
       const filter = new Filter();
+      console.log("Filtros actuales:", scenario, period, lawRange, rockType, metalType); // Verifica los filtros actuales
       const cubesData = await filter.loadFilter(scenario, period, lawRange, rockType, metalType);
+      console.log("Datos filtrados cargados:", cubesData)
       setData(cubesData);
       if (activePage === "yacimiento") {
         visualization.loadVisualization(cubesData);
@@ -38,7 +50,7 @@ function App() {
         setTotalValue(totalValue);
         uplVisualization.loadVisualization(cubesData, uplValue);
       }
-      console.log("Se han cargado " + cubesData.length + " cubos");
+      console.log("Se han cargado " + cubesData.length + " cubos", "El periodo es " + period);
     } catch (error) {
       console.error('Error al cargar el archivo:', error);
     }
@@ -87,6 +99,16 @@ function App() {
                 <option value="Scenario08.txt">Escenario 8</option>
                 <option value="Scenario09.txt">Escenario 9</option>
               </select>
+              <div className="my-3">
+                <p>Cargar Plan Minero: </p>
+                <select className="form-control mb-3" value={period} onChange={(event) => setPeriod(parseInt(event.target.value))}>
+                  {periodOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>        
+              </div>
               <div className="my-3">
                 <p>Filtrar por ley: {lawRange[0]} - {lawRange[1]}</p>
                 <input type="range" className="form-range" min="0" max="100" value={lawRange[0]} onChange={(event) => setLawRange([+event.target.value, lawRange[1]])} />

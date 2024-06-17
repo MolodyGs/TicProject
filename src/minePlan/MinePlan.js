@@ -4,21 +4,21 @@ let data = new Data();
 
 export class MinePlan {
   constructor() {
-    
+    this.selectedPeriod = -1;
   }
 
-  // Si period = -1, carga solo el escenario; si period = 0, carga el MinePlan periodo 0
   async loadPeriod(txt, period) {
-    if (period === -1) {
-      // Cargar escenario
-      return data.loadScenario(txt);
-    } else if (period != -1) {
-      // Cargar MinePlan
-      const minePlanData = await data.loadMinePlan();
-      // Aquí puedes implementar la lógica específica para el periodo 0 del MinePlan si es necesario
-      return minePlanData;
-    } else {
-      throw new Error(`El periodo ${period} no está soportado.`);
-    }
+    this.selectedPeriod = period;
+    await data.loadMinePlan(); // Cargar datos del plan minero
+
+    const filteredMinePlanData = this.filterMinePlanDataByPeriod(data.minePlanData, period); // Filtrar coordenadas de todos los periodos hasta el seleccionado
+
+    const scenarioData = await data.loadScenario(txt, filteredMinePlanData); // Pasar datos filtrados al cargar el escenario
+
+    return scenarioData; // Retornar datos del escenario filtrados
+  }
+
+  filterMinePlanDataByPeriod(minePlanData, period) {
+    return minePlanData.filter(d => d.period <= period); // Filtrar coordenadas hasta el periodo seleccionado
   }
 }
