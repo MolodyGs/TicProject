@@ -18,7 +18,7 @@ function App() {
         style={
           loading
             ? {
-                filter: 'blur(10px) brightness(0.9)',
+                filter: 'blur(10px) brightness(0.7)',
                 pointerEvents: 'none',
                 transitionDuration: '0.2s',
                 opacity: 0.5,
@@ -39,8 +39,8 @@ function App() {
       {loading ? (
         <div
           style={{
-            width: 100,
-            height: 100,
+            width: 300,
+            height: 300,
             backgroundColor: 'white',
             boxShadow: '0 10px 10px rgba(0, 0, 0, 0.1)',
             borderRadius: 10,
@@ -51,8 +51,18 @@ function App() {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
+            flexDirection: 'column',
           }}
         >
+          <p
+            style={{
+              textAlign: 'center',
+              marginBottom: 60,
+              color: 'grey',
+            }}
+          >
+            Cargando datos
+          </p>
           <CircularProgress />
         </div>
       ) : null}
