@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { useFilter } from '../../hooks/useFilter';
+import { color } from 'three/examples/jsm/nodes/Nodes.js';
 
 const Deposit = ({ setLoading }) => {
   console.log('Esperando datos...');
@@ -37,37 +38,56 @@ const Deposit = ({ setLoading }) => {
     const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
 
     // Crear el material por defecto y materiales específicos
-    const defaultMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cubeMaterials = {
-      gold: new THREE.MeshBasicMaterial({ color: 0xffd700 }),
-      silver: new THREE.MeshBasicMaterial({ color: 0xc0c0c0 }),
-    };
+    // const cubeMaterials = {
+    //   gold: new THREE.MeshBasicMaterial({ color: 0xffd700 }),
+    //   silver: new THREE.MeshBasicMaterial({ color: 0xc0c0c0 }),
+    // };
 
     // Crear el InstancedMesh para los cubos
-    const numCubes = data.length; // Suponiendo que 'data' es tu arreglo de cubos
-    const cubesMesh = new THREE.InstancedMesh(
-      boxGeometry,
-      defaultMaterial,
-      numCubes,
-    );
+    const numCubes = data.length;
 
-    // Matriz de transformación para cada cubo
+    let color1 = '';
+    let color2 = '';
+    let color3 = '';
+    let hexColor = 0;
+
     const matrix = new THREE.Matrix4();
-    const spacing = 2; // Espaciado entre cubos
 
-    // Configurar la posición y material para cada cubo
+    let cubeGroup = new THREE.Group();
     data.forEach((cube, index) => {
-      let material = defaultMaterial;
+      hexColor = cube[4] / cube[3];
+      color1 = Math.round(hexColor * 255).toString(16);
+      color2 = Math.round(hexColor * 90).toString(16);
+      color3 = Math.round(hexColor * 10).toString(16);
+      color1.length == 1 ? (color1 = '0' + color1) : color1;
+      color2.length == 1 ? (color2 = '0' + color2) : color2;
+      color3.length == 1 ? (color3 = '0' + color3) : color3;
+      hexColor = (
+        '#' +
+        color1.toString() +
+        color2.toString() +
+        color3.toString()
+      ).toString(16);
+      // console.log(hexColor);
+      if (hexColor.length < 2) {
+        hexColor = '0' + hexColor;
+      }
 
-      if (cube[4] > 0) material = cubeMaterials.gold;
-      else if (cube[5] > 0) material = cubeMaterials.silver;
+      let defaultMaterial = new THREE.MeshBasicMaterial({ color: hexColor });
+      const cubesMesh = new THREE.InstancedMesh(
+        boxGeometry,
+        defaultMaterial,
+        numCubes,
+      );
 
       // Establecer la posición del cubo en la matriz
       matrix.setPosition(cube[0], cube[1], cube[2]);
+
       cubesMesh.setMatrixAt(index, matrix);
+      cubeGroup.add(cubesMesh);
     });
-    // Agregar el InstancedMesh a la escena
-    scene.add(cubesMesh);
+    scene.add(cubeGroup);
+
     // Posicionar la cámara
     camera.position.set(30, 30, 15);
 
