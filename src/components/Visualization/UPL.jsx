@@ -13,7 +13,7 @@ const colors = [
   new THREE.Color('#E0E0E0'),
 ];
 
-const UPL = ({ setLoading }) => {
+const UPL = ({ setLoading, setInfo }) => {
   console.log('Esperando datos...');
   const { data, upl } = useFilter();
   const containerRef = useRef(null);
@@ -23,7 +23,7 @@ const UPL = ({ setLoading }) => {
   }
 
   useEffect(() => {
-    console.log('Renderizando');
+    setInfo('Calculando superficie...');
     const container = containerRef.current;
     if (!container) return;
 
@@ -98,6 +98,7 @@ const UPL = ({ setLoading }) => {
     let colorContDirection = 1;
 
     const surfaceData = createSurfaceWithHoles(data);
+    setInfo('Generando geomtria...');
     surfaceData.forEach((row, x) => {
       row.forEach((depth, y) => {
         const cubeGroup = createRecGroup(x, y, depth, colors[colorCont]);

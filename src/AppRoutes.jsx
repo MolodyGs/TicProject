@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import Deposit from './components/Visualization/Deposit';
 import UPL from './components/Visualization/UPL';
 
-export const AppRoutes = ({ setLoading }) => {
+export const AppRoutes = ({ setLoading, setInfo }) => {
   return (
     <>
       <Routes>
@@ -11,9 +11,13 @@ export const AppRoutes = ({ setLoading }) => {
         <Route
           exact
           path="/Deposit"
-          element={<Deposit setLoading={setLoading} />}
+          element={<Deposit setLoading={setLoading} setInfo={setInfo} />}
         />
-        <Route exact path="/UPL" element={<UPL setLoading={setLoading} />} />
+        <Route
+          exact
+          path="/UPL"
+          element={<UPL setLoading={setLoading} setInfo={setInfo} />}
+        />
       </Routes>
     </>
   );
