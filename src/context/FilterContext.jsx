@@ -28,6 +28,7 @@ export const AppStateProvider = ({ children }) => {
   const [extractionCost, setExtractionCost] = useState(null);
   const [totalValue, setTotalValue] = useState(null);
   const [activePage, setActivePage] = useState(DEFAULT_ACTIVE_PAGE);
+  const [law,setLaw ] = useState(0);
 
   const state = useMemo(
     () => ({
@@ -51,6 +52,8 @@ export const AppStateProvider = ({ children }) => {
       setTotalValue,
       activePage,
       setActivePage,
+      law,
+      setLaw
     }),
     [
       data,
