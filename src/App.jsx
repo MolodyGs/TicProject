@@ -1,113 +1,183 @@
-import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-import { Visualization } from './visualization/Visualization.js'
-import { useEffect } from 'react';
-import './App.css'
-import { Filter } from './filter/Filter'
+import React, { useState, useEffect } from 'react';
+import { Visualization } from './visualization/Visualization';
+import { UplVisualization } from './stadistics/UplVisualization';
+import { Filter } from './filter/Filter';
+import { calculateUpl } from './stadistics/Upl';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
+const MINERAL_PRICE = 50;
+const EXTRACTION_COST_PER_BLOCK = 10000;
 
 function App() {
-
-  const [data, setdata] = useState([1,2,3]);
+  const [data, setData] = useState([]);
   const [scenario, setScenario] = useState("Scenario00.txt");
-  const [isMinePlan, setIsMinePlan] = useState(false);
-  const [period, setPeriod] = useState(-1);  // Periodo inicial sin filtro
-  const [periods, setPeriods] = useState(null);
+  const [period, setPeriod] = useState(-1);
+  const [lawRange, setLawRange] = useState([0, 100]);
+  const [rockType, setRockType] = useState("todos");
+  const [metalType, setMetalType] = useState("todos");
+  const [upl, setUpl] = useState(null);
+  const [extractionCost, setExtractionCost] = useState(null);
+  const [totalValue, setTotalValue] = useState(null);
+  const [activePage, setActivePage] = useState("yacimiento");
 
   const visualization = new Visualization();
+  const uplVisualization = new UplVisualization();
 
-  
-  //Carga los datos a traves de la clase Filter
-  async function loadData(txt){
-    setdata([]);
-    try{
+  const loadData = async () => {
+    try {
       const filter = new Filter();
-      //-1 Para el periodo y -1 para el filtro. Esto indicando que no quedemos revisar un periodo o filtrar datos.
-      const {sceneData, periods} = await filter.loadFilter(txt, -1, -1);
-      setPeriods(periods);
-      setdata(sceneData);
-      visualization.loadVisualization(sceneData);
-      console.log("Se han cargado " + sceneData.length + " cubos");
-
-
-    }catch(error){
+      const cubesData = await filter.loadFilter(scenario, period, lawRange, rockType, metalType);
+      setData(cubesData);
+      if (activePage === "yacimiento") {
+        visualization.loadVisualization(cubesData);
+      } else {
+        const { uplValue, totalExtractionCost, totalValue } = calculateUpl(cubesData, MINERAL_PRICE, EXTRACTION_COST_PER_BLOCK);
+        setUpl(uplValue);
+        setExtractionCost(totalExtractionCost);
+        setTotalValue(totalValue);
+        uplVisualization.loadVisualization(cubesData, uplValue);
+      }
+      console.log("Se han cargado " + cubesData.length + " cubos");
+    } catch (error) {
       console.error('Error al cargar el archivo:', error);
     }
-  }
-
-  // useEffect(() => {
-  //   loadData("");
-  // }, [])
+  };
 
   useEffect(() => {
-      loadData(scenario);
-  }, [scenario, period])
+    loadData();
+  }, [scenario, period, lawRange, rockType, metalType, activePage]);
 
   return (
-    <>
-      {/* <div>
-        <p>Cargar datos de: </p>
-        <select name="" id="" onChange={(event) => setScenario(event.target.value)}>
-          <option value="Scenario00.txt">Scenario00.txt</option>
-          <option value="Scenario01.txt">Scenario01.txt</option>
-          <option value="Scenario02.txt">Scenario02.txt</option>
-          <option value="Scenario03.txt">Scenario03.txt</option>
-          <option value="Scenario04.txt">Scenario04.txt</option>
-          <option value="Scenario05.txt">Scenario05.txt</option>
-          <option value="Scenario06.txt">Scenario06.txt</option>
-          <option value="Scenario07.txt">Scenario07.txt</option>
-          <option value="Scenario08.txt">Scenario08.txt</option>
-          <option value="Scenario09.txt">Scenario09.txt</option>
-        </select>
-        <table className='tabla'>
-          <thead>
-            <tr>
-              <th>X</th>
-              <th>Y</th>
-              <th>Z</th>
-              <th>Bloque</th>
-              <th>Mineral 1</th>
-              <th>Mineral 2</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((item, index) => (
-              <tr key={index}>
-              {isMinePlan ? (
-                <>
-                  <td>{isNaN(item.period) ? '' : item.period}</td>
-                  <td>{isNaN(item.xIndex) ? '' : item.xIndex}</td>
-                  <td>{isNaN(item.yIndex) ? '' : item.yIndex}</td>
-                  <td>{isNaN(item.zIndex) ? '' : item.zIndex}</td>
-                </>
-              ) : (
-                <>
-                  <td>{item[0]}</td>
-                  <td>{item[1]}</td>
-                  <td>{item[2]}</td>
-                  <td>{item[3]}</td>
-                  <td>{item[4]}</td>
-                  <td>{item[5]}</td>
-                </>
-              )}
-            </tr>
-
-            ))}
-          </tbody>
-        </table>
-      </div> */}
-
-      <div style={{border: "2px solid red", padding:"5px", display: 'flex', gap:"5px"}}>
-        {periods ? (<>
-        {periods.map( per => {
-          return (
-            <h2 style={{margin: "0"}}>{per}</h2>
-          )
-        })}
-        </>): (<>Periods llega vacio????</>)}
+    <div className="d-flex">
+      <div className="bg-light border-right" id="sidebar-wrapper" style={{ minWidth: '250px', fontFamily: 'Arial, sans-serif' }}>
+      <div className="text-center mt-4">
+          <img src="https://1000logos.net/wp-content/uploads/2020/07/BHP-Logo.png" alt="Logo Minero" style={{ width: '100px', height: '50px' }} />
+        </div>
+        <div className="sidebar-heading text-center py-4 primary-text fs-4 fw-bold border-bottom">
+          <span>Sistema Inteligente para Yacimientos Mineros</span>
+        </div>
+        <div className="list-group list-group-flush my-3">
+          <a href="#!" className="list-group-item list-group-item-action bg-light text-primary d-flex align-items-center" onClick={() => setActivePage("yacimiento")}>
+            <i className="fas fa-mountain mr-2"></i>
+            <span> Yacimiento</span>
+          </a>
+          <a href="#!" className="list-group-item list-group-item-action bg-light text-primary d-flex align-items-center" onClick={() => setActivePage("upl")}>
+            <i className="fas fa-gem mr-2"></i>
+            <span> Ultimate Pit Limit</span>
+          </a>
+          
+        </div>
       </div>
-    </>
-  )
+      <div className="container-fluid">
+        {activePage === "yacimiento" && (
+          <div className="row">
+            <div className="col-4 mt-6">
+              <h2>Filtros</h2>
+              <p>Cargar datos de: </p>
+              <select className="form-control" onChange={(event) => setScenario(event.target.value)}>
+                <option value="Scenario00.txt">Escenario 0</option>
+                <option value="Scenario01.txt">Escenario 1</option>
+                <option value="Scenario02.txt">Escenario 2</option>
+                <option value="Scenario03.txt">Escenario 3</option>
+                <option value="Scenario04.txt">Escenario 4</option>
+                <option value="Scenario05.txt">Escenario 5</option>
+                <option value="Scenario06.txt">Escenario 6</option>
+                <option value="Scenario07.txt">Escenario 7</option>
+                <option value="Scenario08.txt">Escenario 8</option>
+                <option value="Scenario09.txt">Escenario 9</option>
+              </select>
+              <div className="my-3">
+                <p>Filtrar por ley: {lawRange[0]} - {lawRange[1]}</p>
+                <input type="range" className="form-range" min="0" max="100" value={lawRange[0]} onChange={(event) => setLawRange([+event.target.value, lawRange[1]])} />
+                <input type="range" className="form-range" min="0" max="100" value={lawRange[1]} onChange={(event) => setLawRange([lawRange[0], +event.target.value])} />
+              </div>
+              <div className="my-3">
+                <p>Filtrar por tipo de roca: </p>
+                <select className="form-control" onChange={(event) => setRockType(event.target.value)}>
+                  <option value="todos">Todos</option>
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                </select>
+              </div>
+              <div className="my-3">
+                <p>Filtrar por tipo de metal: </p>
+                <select className="form-control" onChange={(event) => setMetalType(event.target.value)}>
+                  <option value="todos">Todos</option>
+                  <option value="oro">Oro</option>
+                  <option value="plata">Plata</option>
+                </select>
+              </div>
+            </div>
+            <div className="col-8">
+              <div id="3d-visualization" style={{ width: '100%', height: '100vh' }}></div>
+            </div>
+          </div>
+        )}
+        {activePage === "upl" && (
+          <div className="row">
+            <div className="col-4 mt-6">
+              <h2>Filtros</h2>
+              <p>Cargar datos de: </p>
+              <select className="form-control" onChange={(event) => setScenario(event.target.value)}>
+                <option value="Scenario00.txt">Escenario 0</option>
+                <option value="Scenario01.txt">Escenario 1</option>
+                <option value="Scenario02.txt">Escenario 2</option>
+                <option value="Scenario03.txt">Escenario 3</option>
+                <option value="Scenario04.txt">Escenario 4</option>
+                <option value="Scenario05.txt">Escenario 5</option>
+                <option value="Scenario06.txt">Escenario 6</option>
+                <option value="Scenario07.txt">Escenario 7</option>
+                <option value="Scenario08.txt">Escenario 8</option>
+                <option value="Scenario09.txt">Escenario 9</option>
+              </select>
+              <div className="my-3">
+                <p>Filtrar por ley: {lawRange[0]} - {lawRange[1]}</p>
+                <input type="range" className="form-range" min="0" max="100" value={lawRange[0]} onChange={(event) => setLawRange([+event.target.value, lawRange[1]])} />
+                <input type="range" className="form-range" min="0" max="100" value={lawRange[1]} onChange={(event) => setLawRange([lawRange[0], +event.target.value])} />
+              </div>
+              <div className="my-3">
+                <p>Filtrar por tipo de roca: </p>
+                <select className="form-control" onChange={(event) => setRockType(event.target.value)}>
+                  <option value="todos">Todos</option>
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                </select>
+              </div>
+              <div className="my-3">
+                <p>Filtrar por tipo de metal: </p>
+                <select className="form-control" onChange={(event) => setMetalType(event.target.value)}>
+                  <option value="todos">Todos</option>
+                  <option value="oro">Oro</option>
+                  <option value="plata">Plata</option>
+                </select>
+              </div>
+              <div className="card bg-light mb-3 mt-4" style={{ maxWidth: '30rem' }}>
+                <div className="card-header">UPL</div>
+                <div className="card-body">
+                  <h5 className="card-title">Valores</h5>
+                  <p>
+                    <i className="fas fa-dollar-sign mr-2"></i> UPL: <span className={upl !== null && upl < 0 ? 'text-danger' : 'text-success'}>
+                      {upl !== null && typeof upl === 'number' ? `${upl.toFixed(2)} USD` : 'Cargando...'}
+                    </span>
+                  </p>
+                  <p>
+                    <i className="fas fa-dollar-sign mr-2"></i> Coste Total de Extracción: {extractionCost !== null && typeof extractionCost === 'number' ? `${extractionCost.toFixed(2)} USD` : 'Cargando...'}
+                  </p>
+                  <p>
+                    <i className="fas fa-dollar-sign mr-2"></i> Valor Venta Total: {totalValue !== null && typeof totalValue === 'number' ? `${totalValue.toFixed(2)} USD` : 'Cargando...'}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="col-8">
+              <div id="upl-visualization" style={{ width: '100%', height: '100vh' }}></div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
-export default App
+export default App;

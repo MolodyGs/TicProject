@@ -1,131 +1,119 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { render } from 'react-dom';
 
-export class Visualization{
+export class Visualization {
+  loadVisualization = (cubesData) => {
+    const container = document.getElementById('3d-visualization');
+    if (!container) return;
 
-    loadVisualization = (cubesData) => {
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color('#FFFFFF');
+    const camera = new THREE.PerspectiveCamera(90, container.offsetWidth / container.offsetHeight, 0.1, 1000);
 
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color('#FFFFFF');
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(container.offsetWidth, container.offsetHeight);
+    container.innerHTML = ''; // Clear previous content
+    container.appendChild(renderer.domElement);
 
-        const renderer = new THREE.WebGLRenderer();
-        renderer.setSize(1920, window.innerHeight);
-        if(document.querySelector("body canvas")){
-          document.querySelector("body canvas").parentNode.removeChild(document.querySelector("body canvas"));
+    const controls = new OrbitControls(camera, renderer.domElement);
+    const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+    const cubeMaterial = new THREE.MeshBasicMaterial({ color: "red" });
+    const cubeWireframeMaterial = new THREE.MeshBasicMaterial({ color: '#000000', wireframe: true });
+
+    const cubesToScreen = [];
+    const gridSize = 8;
+    const spacing = 1;
+
+    const greyScale = () => {
+      let min = 99999;
+      let max = 0;
+      cubesData.forEach(cube => {
+        const value = parseFloat(cube[4]);
+        if (value > max) {
+          max = value;
+        } else if (value < min) {
+          min = value;
         }
-        document.body.appendChild(renderer.domElement);
+      });
+      return [min, max];
+    };
 
-        // Añade OrbitControls para controlar la cámara
-        const controls = new OrbitControls(camera, renderer.domElement);
+    cubesData.forEach(cube => {
+      let material;
 
-        // Crea geometría reutilizable para los cubos
-        const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+      if (cube[4] > 0) {
+        // Si hay oro en el bloque, asigna el color amarillo oscuro
+        material = new THREE.MeshBasicMaterial({ color: 0xFFD700 }); // Amarillo oscuro
+      } else if (cube[5] > 0) {
+        // Si hay plata en el bloque, asigna el color gris claro
+        material = new THREE.MeshBasicMaterial({ color: 0xC0C0C0 }); // Gris claro
+      } else {
+        // Si no hay oro ni plata, usa un material rojo por defecto
+        material = cubeMaterial.clone();
+      }
 
-        // Lista para almacenar cubos y sus tipos
-        const cubesToScreen = [];
+      const solidCube = new THREE.Mesh(boxGeometry, material);
+      const wireframeCube = new THREE.Mesh(boxGeometry, cubeWireframeMaterial.clone());
 
-        // Dimensiones de la cuadrícula y espacio total
-        const gridSize = 8;  // Tamaño de la cuadrícula (10x10x10 = 1000 cubos)
-        const spacing = 1;  // Espacio entre cubos
-        const offset = (gridSize - 1) * spacing / 2;  // Para centrar la cuadrícula
+      const cubeGroup = new THREE.Group();
+      cubeGroup.add(solidCube);
+      cubeGroup.add(wireframeCube);
 
-        const greyScale = () => {
-            let min = 99999;
-            let max = 0;
-            cubesData.forEach(cube => {
-                const value = parseFloat(cube[4]);
-                if(value > max){
-                    max = value;
-                }else if(value < min){
-                    min = value;
-                }
-            });
-            return [min, max];
-        }
+      cubeGroup.position.set(cube[0] * spacing, cube[1] * spacing, cube[2] * spacing);
 
-        const minValue = greyScale()[0];
-        const maxValue = greyScale()[1];
+      cubesToScreen.push(cubeGroup);
+      scene.add(cubeGroup);
+    });
 
-        cubesData.forEach(cube => {
-            // console.log("Cargando cubo...")
-            const solidMaterial = new THREE.MeshBasicMaterial({ color: "red" });
+    camera.position.z = 15;
+    camera.position.x = 30;
+    camera.position.y = 30;
 
-            // Material para el wireframe (borde negro)
-            const wireframeMaterial = new THREE.MeshBasicMaterial({ color: '#000000', wireframe: true });
 
-            const solidCube = new THREE.Mesh(boxGeometry, solidMaterial);
-            const wireframeCube = new THREE.Mesh(boxGeometry, wireframeMaterial);
-
-            // Agrupa ambos para crear el efecto de bordes negros
-            const cubeGroup = new THREE.Group();
-            cubeGroup.add(solidCube);
-            cubeGroup.add(wireframeCube);
-
-            cubeGroup.type = "hierro";  // Asigna el tipo al grupo
-
-            // Posiciona el cubo en la cuadrícula 3D
-            cubeGroup.position.set(
-                cube[0] * spacing,
-                cube[1] * spacing,
-                cube[2] * spacing
-            );
-
-            cubesToScreen.push(cubeGroup);  // Añade el grupo a la lista
-            scene.add(cubeGroup);  // Añade el grupo a la escena
-        });
-
-        // Posiciona la cámara para tener una vista amplia
-        camera.position.z = 30;
-
-        // Función de animación
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update();  // Permite la interacción de la cámara
-            renderer.render(scene, camera);  // Renderiza la escena
-        }
-
-        animate();  // Inicia la animación
-
-        // Filtra los cubos según el tipo
-        // function filterCubes(type) {
-        //     cubes.forEach(cube => {
-        //         if (type === 'todos' || cube.type === type) {
-        //             cube.visible = true;  // Muestra el cubo si coincide el tipo
-        //         } else {
-        //             cube.visible = false;  // Oculta el cubo si no coincide el tipo
-        //         }
-        //     });
-        // }
-
-        // Añade botones para filtrar cubos
-        const buttonContainer = document.createElement('div');
-        buttonContainer.style.position = 'absolute';
-        buttonContainer.style.top = '10px';
-        buttonContainer.style.right = '10px';
-
-        const buttonAll = document.createElement('button');
-        buttonAll.innerText = 'Todos';
-        buttonAll.onclick = () => filterCubes('todos');
-
-        const buttonIron = document.createElement('button');
-        buttonIron.innerText = 'Hierro';
-        buttonIron.onclick = () => filterCubes('hierro');
-
-        const buttonGold = document.createElement('button');
-        buttonGold.innerText = 'Oro';
-        buttonGold.onclick = () => filterCubes('oro');
-
-        const buttonCopper = document.createElement('button');
-        buttonCopper.innerText = 'Cobre';
-        buttonCopper.onclick = () => filterCubes('cobre');
-
-        buttonContainer.appendChild(buttonAll);
-        buttonContainer.appendChild(buttonIron);
-        buttonContainer.appendChild(buttonGold);
-        buttonContainer.appendChild(buttonCopper);
-        document.body.appendChild(buttonContainer);
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
     }
 
+    animate();
+  }
+
+  visualizeVerticalMine = (cubesData) => {
+    const container = document.getElementById('upl-visualization');
+    if (!container) return;
+
+    // Limpia el contenedor antes de renderizar
+    container.innerHTML = '';
+
+    const width = 200;
+    const height = 400;
+
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", width);
+    svg.setAttribute("height", height);
+
+    const minY = Math.min(...cubesData.map(cube => cube[1]));
+    const maxY = Math.max(...cubesData.map(cube => cube[1]));
+    const yRange = maxY - minY;
+
+    cubesData.forEach(cube => {
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      const normalizedY = (cube[1] - minY) / yRange;
+      rect.setAttribute("x", 10);
+      rect.setAttribute("y", height - (normalizedY * height));
+      rect.setAttribute("width", 20);
+      rect.setAttribute("height", 10);
+      rect.setAttribute("fill", this.getColorFromLaw(cube[3]));
+
+      svg.appendChild(rect);
+    });
+
+    container.appendChild(svg);
+  }
+
+  getColorFromLaw(law) {
+    const colorValue = Math.floor((1 - law) * 255);
+    return `rgb(255, ${colorValue}, ${colorValue})`;
+  }
 }
