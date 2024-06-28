@@ -1,21 +1,35 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import Sidebar from './components/Sidebar/Sidebar';
 import { useFilter } from './hooks/useFilter';
-import Deposit from './components/Visualization/Deposit';
-import UPL from './components/Visualization/UPL';
+import { AppRoutes } from './AppRoutes';
+import Sidebar from './components/Sidebar/Sidebar';
+import { useState } from 'react';
+import CircularProgress from '@mui/material/CircularProgress';
+import './App.css';
 
 function App() {
-  const { activePage, setActivePage } = useFilter();
+  // const { activePage, setActivePage } = useFilter();
+  const [loading, setLoading] = useState(true);
+  const [info, setInfo] = useState('Calculando superficie...');
 
   return (
-    <div className="d-flex">
-      <Sidebar setActivePage={setActivePage} />
-      <div className="container-fluid">
-        {activePage === 'yacimiento' && <Deposit />}
-        {activePage === 'upl' && <UPL />}
+    <>
+      <div className={loading ? 'd-flex backgroud-blur' : 'd-flex'}>
+        <Sidebar />
+        <div className="container-fluid">
+          <AppRoutes setLoading={setLoading} setInfo={setInfo} />
+        </div>
       </div>
-    </div>
+      <div
+        className={
+          loading ? 'animation-in loading-view' : 'animation-out loading-view'
+        }
+      >
+        <p className="loading-text">Cargando datos...</p>
+        <p className="loading-info">{info}</p>
+        <CircularProgress />
+      </div>
+    </>
   );
 }
 

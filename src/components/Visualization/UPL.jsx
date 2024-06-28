@@ -3,11 +3,27 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { useFilter } from '../../hooks/useFilter';
 
-const UPL = () => {
+const colors = [
+  new THREE.Color('#202020'),
+  new THREE.Color('#404040'),
+  new THREE.Color('#606060'),
+  new THREE.Color('#808080'),
+  new THREE.Color('#A0A0A0'),
+  new THREE.Color('#C0C0C0'),
+  new THREE.Color('#E0E0E0'),
+];
+
+const UPL = ({ setLoading, setInfo }) => {
+  console.log('Esperando datos...');
   const { data, upl } = useFilter();
   const containerRef = useRef(null);
 
+  if (data.length >= 1531) {
+    setLoading(false);
+  }
+
   useEffect(() => {
+    setInfo('Calculando superficie...');
     const container = containerRef.current;
     if (!container) return;
 
@@ -24,14 +40,7 @@ const UPL = () => {
     renderer.setSize(container.offsetWidth, container.offsetHeight);
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
-
     const controls = new OrbitControls(camera, renderer.domElement);
-
-    const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
-    const cubeWireframeMaterial = new THREE.MeshBasicMaterial({
-      color: '#000000',
-      wireframe: true,
-    });
 
     const createSurfaceWithHoles = (data) => {
       const surfaceSize = 42;
@@ -70,44 +79,42 @@ const UPL = () => {
       return surface;
     };
 
-    const createBlockGroup = (x, y, z, color) => {
+    const createRecGroup = (x, y, z, color) => {
+      if (z == 0) return null;
       const material = new THREE.MeshBasicMaterial({ color });
-
-      const solidCube = new THREE.Mesh(boxGeometry, material);
-      const wireframeCube = new THREE.Mesh(
-        boxGeometry,
-        cubeWireframeMaterial.clone(),
-      );
+      const recGeometry = new THREE.BoxGeometry(1, z, 1);
+      if (z < 0) {
+        console.log(z);
+      }
+      const solidCube = new THREE.Mesh(recGeometry, material);
 
       const cubeGroup = new THREE.Group();
       cubeGroup.add(solidCube);
-      cubeGroup.add(wireframeCube);
-
-      cubeGroup.position.set(x, z, y);
+      cubeGroup.position.set(x, z - z / 2, y);
       return cubeGroup;
     };
 
-    const surfaceData = createSurfaceWithHoles(data);
+    let colorCont = 0;
+    let colorContDirection = 1;
 
+    const surfaceData = createSurfaceWithHoles(data);
+    setInfo('Generando geomtria...');
     surfaceData.forEach((row, x) => {
       row.forEach((depth, y) => {
-        for (let z = 0; z < depth; z++) {
-          let color;
-          if (z < 1) color = new THREE.Color('red');
-          else if (z < 3) color = new THREE.Color('orange');
-          else if (z < 5) color = new THREE.Color('yellow');
-          else if (z < 7) color = new THREE.Color('green');
-          else if (z < 9) color = new THREE.Color('blue');
-          else if (z < 11) color = new THREE.Color('indigo');
-          else color = new THREE.Color('violet');
-
-          const cubeGroup = createBlockGroup(x, y, z, color);
+        const cubeGroup = createRecGroup(x, y, depth, colors[colorCont]);
+        if (cubeGroup != null) {
           scene.add(cubeGroup);
         }
       });
+      if (colorCont == 6) {
+        colorContDirection = -1;
+      } else if (colorCont == 0) {
+        colorContDirection = 1;
+      }
+      colorCont += colorContDirection;
     });
 
-    camera.position.set(0, 40, 40);
+    camera.position.set(0, 30, 75);
     controls.update();
 
     const animate = () => {
@@ -117,6 +124,20 @@ const UPL = () => {
     };
 
     animate();
+
+    //Calcula la cantidad de vertices en la escena
+    let totalVertices = 0;
+    scene.traverse(function (object) {
+      if (object.isMesh) {
+        const geometry = object.geometry;
+        if (geometry.isBufferGeometry) {
+          totalVertices += geometry.attributes.position.count;
+        } else if (geometry.isGeometry) {
+          totalVertices += geometry.vertices.length;
+        }
+      }
+    });
+    console.log('totalVertices: ' + totalVertices);
 
     return () => {
       renderer.dispose();
