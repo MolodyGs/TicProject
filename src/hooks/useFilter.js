@@ -25,6 +25,10 @@ export const useFilter = () => {
     setTotalValue,
     activePage,
     setActivePage,
+    loading,
+    setLoading,
+    info,
+    setInfo
   } = useAppState();
 
   const filterData = useCallback(async () => {
@@ -343,7 +347,7 @@ export const useFilter = () => {
     upl,
     extractionCost,
     setData,
-    setTotalValue,
+    setTotalValue
   ]);
 
   useEffect(() => {
@@ -370,5 +374,9 @@ export const useFilter = () => {
     setTotalValue,
     activePage,
     setActivePage,
+    loading,
+    setLoading,
+    info,
+    setInfo
   };
 };

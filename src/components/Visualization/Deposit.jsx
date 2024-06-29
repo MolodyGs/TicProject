@@ -3,9 +3,9 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { useFilter } from '../../hooks/useFilter';
 
-const Deposit = ({ setLoading }) => {
+const Deposit = () => {
   console.log('Esperando datos...');
-  const { data } = useFilter();
+  const { data, setLoading } = useFilter();
   const containerRef = useRef(null);
 
   if (data.length === 1531) {

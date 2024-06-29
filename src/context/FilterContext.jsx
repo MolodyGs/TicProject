@@ -28,6 +28,8 @@ export const AppStateProvider = ({ children }) => {
   const [extractionCost, setExtractionCost] = useState(null);
   const [totalValue, setTotalValue] = useState(null);
   const [activePage, setActivePage] = useState(DEFAULT_ACTIVE_PAGE);
+  const [loading, setLoading] = useState(true);
+  const [info, setInfo] = useState('');
 
   const state = useMemo(
     () => ({
@@ -51,6 +53,10 @@ export const AppStateProvider = ({ children }) => {
       setTotalValue,
       activePage,
       setActivePage,
+      loading,
+      setLoading,
+      info,
+      setInfo
     }),
     [
       data,
@@ -63,6 +69,8 @@ export const AppStateProvider = ({ children }) => {
       extractionCost,
       totalValue,
       activePage,
+      loading,
+      info
     ],
   );
 
