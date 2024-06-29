@@ -45,6 +45,14 @@ function Sidebar() {
           <i className="fas fa-gem mr-2" />
           <span>Ultimate Pit Limit</span>
         </a>
+        <a
+          href="#!"
+          className="list-group-item list-group-item-action bg-light text-primary d-flex align-items-center"
+          onClick={() => setActivePage('estadisticas')}
+        >
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Estadísticas</span>
+        </a>
       </div>
       <div className="border-top border-dark pt-4" />
       <div className="mx-4">

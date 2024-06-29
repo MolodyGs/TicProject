@@ -28,7 +28,9 @@ export const useFilter = () => {
     loading,
     setLoading,
     info,
-    setInfo
+    setInfo,
+    law,
+    setLaw,
   } = useAppState();
 
   const filterData = useCallback(async () => {
@@ -36,10 +38,15 @@ export const useFilter = () => {
       const periodData = await loadPeriod(scenario, period);
 
       // Filtrar por ley
+      //let accLaw = 0;
+      //let accBlocks = 0;
       const filteredByLaw = periodData.filter((cube) => {
         const law = ((cube[4] + cube[5]) / cube[3]) * 100;
+        //accLaw += law;
+        //accBlocks += 1;
         return law >= lawRange[0] && law <= lawRange[1];
       });
+      //console.log('Ley promedio:', accLaw / accBlocks);
 
       // Filtrar por tipo de roca
       const filteredByRock = filteredByLaw.filter((cube) => {
@@ -319,12 +326,18 @@ export const useFilter = () => {
         return true;
       });
 
+      let medianLaw = 0;
+      let totalBlocks = 0;
       // Calcular costos de extracción y valor total
       const updatedFilteredData = filteredByMetal.map((cube) => {
         const law = ((cube[4] + cube[5]) / cube[3]) * 100;
+        medianLaw += law;
+        totalBlocks += 1;
         const cost = law * MINERAL_PRICE * upl - extractionCost;
         return [...cube, cost];
       });
+
+      setLaw(Math.floor(medianLaw / totalBlocks));
 
       setData(updatedFilteredData);
 
@@ -347,7 +360,7 @@ export const useFilter = () => {
     upl,
     extractionCost,
     setData,
-    setTotalValue
+    setTotalValue,
   ]);
 
   useEffect(() => {
@@ -377,6 +390,6 @@ export const useFilter = () => {
     loading,
     setLoading,
     info,
-    setInfo
+    setInfo,
   };
 };

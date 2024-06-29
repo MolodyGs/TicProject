@@ -30,6 +30,7 @@ export const AppStateProvider = ({ children }) => {
   const [activePage, setActivePage] = useState(DEFAULT_ACTIVE_PAGE);
   const [loading, setLoading] = useState(true);
   const [info, setInfo] = useState('');
+  const [law, setLaw] = useState(0);
 
   const state = useMemo(
     () => ({
@@ -56,7 +57,9 @@ export const AppStateProvider = ({ children }) => {
       loading,
       setLoading,
       info,
-      setInfo
+      setInfo,
+      law,
+      setLaw,
     }),
     [
       data,
@@ -70,7 +73,8 @@ export const AppStateProvider = ({ children }) => {
       totalValue,
       activePage,
       loading,
-      info
+      info,
+      law,
     ],
   );
 

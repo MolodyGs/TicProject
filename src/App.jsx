@@ -10,6 +10,7 @@ function App() {
 
   const { loading, info } = useFilter();
 
+
   return (
     <>
       <div className={loading ? 'd-flex background-blur' : 'd-flex'}>
