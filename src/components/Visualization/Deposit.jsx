@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { useFilter } from '../../hooks/useFilter';
-import { color } from 'three/examples/jsm/nodes/Nodes.js';
 
 const Deposit = ({ setLoading }) => {
   console.log('Esperando datos...');
@@ -34,17 +33,7 @@ const Deposit = ({ setLoading }) => {
     container.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
-    // Crear la geometría del cubo
     const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
-
-    // Crear el material por defecto y materiales específicos
-    // const cubeMaterials = {
-    //   gold: new THREE.MeshBasicMaterial({ color: 0xffd700 }),
-    //   silver: new THREE.MeshBasicMaterial({ color: 0xc0c0c0 }),
-    // };
-
-    // Crear el InstancedMesh para los cubos
-    const numCubes = data.length;
 
     let color1 = '';
     let color2 = '';
@@ -54,7 +43,7 @@ const Deposit = ({ setLoading }) => {
     const matrix = new THREE.Matrix4();
 
     let cubeGroup = new THREE.Group();
-    data.forEach((cube, index) => {
+    data.forEach((cube) => {
       hexColor = cube[4] / cube[3];
       color1 = Math.round(hexColor * 255).toString(16);
       color2 = Math.round(hexColor * 90).toString(16);
@@ -68,27 +57,20 @@ const Deposit = ({ setLoading }) => {
         color2.toString() +
         color3.toString()
       ).toString(16);
-      // console.log(hexColor);
       if (hexColor.length < 2) {
         hexColor = '0' + hexColor;
       }
 
+      const boxMesh = new THREE.Mesh(boxGeometry);
       let defaultMaterial = new THREE.MeshBasicMaterial({ color: hexColor });
-      const cubesMesh = new THREE.InstancedMesh(
-        boxGeometry,
-        defaultMaterial,
-        numCubes,
-      );
+      boxMesh.material = defaultMaterial;
 
-      // Establecer la posición del cubo en la matriz
       matrix.setPosition(cube[0], cube[1], cube[2]);
-
-      cubesMesh.setMatrixAt(index, matrix);
-      cubeGroup.add(cubesMesh);
+      boxMesh.applyMatrix4(matrix);
+      cubeGroup.add(boxMesh);
     });
     scene.add(cubeGroup);
 
-    // Posicionar la cámara
     camera.position.set(30, 30, 15);
 
     const animate = () => {
@@ -98,6 +80,18 @@ const Deposit = ({ setLoading }) => {
     };
 
     animate();
+    let totalVertices = 0;
+    scene.traverse(function (object) {
+      if (object.isMesh) {
+        const geometry = object.geometry;
+        if (geometry.isBufferGeometry) {
+          totalVertices += geometry.attributes.position.count;
+        } else if (geometry.isGeometry) {
+          totalVertices += geometry.vertices.length;
+        }
+      }
+    });
+    console.log('totalVertices: ' + totalVertices);
 
     return () => {
       renderer.dispose();
