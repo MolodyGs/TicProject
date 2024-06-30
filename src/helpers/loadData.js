@@ -1,21 +1,12 @@
-export async function loadFile(txt = 'Scenario00.txt') {
+import { DEFAULT_SCENARIO } from '../utils/constants';
+
+async function loadFile(txt) {
   const path = `src/assets/${txt}`;
   try {
     const response = await fetch(path);
     if (!response.ok) throw new Error('Error al cargar el archivo');
     const textData = await response.text();
-    console.log('Cargando datos...');
-    let data = [];
-    let cube = [];
-    textData.split('\n').forEach((line) => {
-      line.split(',').forEach((element) => {
-        cube.push(parseFloat(element));
-      });
-      if (cube.length === 6) {
-        data.push(cube);
-        cube = [];
-      }
-    });
+    const data = await parseData(textData);
     return data;
   } catch (error) {
     console.error('Error al cargar el archivo: ', error);
@@ -23,8 +14,20 @@ export async function loadFile(txt = 'Scenario00.txt') {
   }
 }
 
-export async function loadPeriod(txt = 'Scenario00.txt', period = -1) {
-  const data = await loadFile(txt);
-  if (period === -1) return data;
-  return data.filter((cube) => cube[0] === period);
+export async function loadScenario(txt = DEFAULT_SCENARIO) {
+  return await loadFile(txt);
+}
+
+export async function loadMinePlan(txt = 'MinePlan.txt') {
+  return await loadFile(txt);
+}
+
+async function parseData(textData) {
+  return textData
+    .split('\n')
+    .filter((line) => line.trim() !== '')
+    .map((line) => {
+      const elements = line.split(',');
+      return elements.map(parseFloat);
+    });
 }

@@ -2,13 +2,14 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { useFilter } from '../../hooks/useFilter';
+import { styles } from './Style';
 
 const Deposit = () => {
   console.log('Esperando datos...');
-  const { data, setLoading } = useFilter();
+  const { scenarioData, setLoading } = useFilter();
   const containerRef = useRef(null);
 
-  if (data.length === 1531) {
+  if (scenarioData.length === 1531) {
     setLoading(false);
   }
 
@@ -19,57 +20,63 @@ const Deposit = () => {
 
     const scene = new THREE.Scene();
     const renderer = new THREE.WebGLRenderer();
-
     scene.background = new THREE.Color('#FFFFFF');
     const camera = new THREE.PerspectiveCamera(
-      90,
+      60,
       container.offsetWidth / container.offsetHeight,
       0.1,
-      1000,
+      100,
     );
+    camera.lookAt(0, 0, 0);
 
     renderer.setSize(container.offsetWidth, container.offsetHeight);
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.enableZoom = true;
+    controls.enablePan = true;
+
+    const axesHelper = new THREE.AxesHelper(25);
+    scene.add(axesHelper);
+    /*
+    const gridSize = 25;
+    const gridDivisions = 25;
+
+    const gridXY = new THREE.GridHelper(gridSize, gridDivisions);
+    scene.add(gridXY);
+
+    const gridXZ = new THREE.GridHelper(gridSize, gridDivisions);
+    gridXZ.rotation.x = Math.PI / 2;
+    scene.add(gridXZ);
+
+    const gridYZ = new THREE.GridHelper(gridSize, gridDivisions);
+    gridYZ.rotation.z = Math.PI / 2;
+    scene.add(gridYZ);
+*/
     const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
 
-    let color1 = '';
-    let color2 = '';
-    let color3 = '';
-    let hexColor = 0;
+    const cubeGroup = new THREE.Group();
 
-    const matrix = new THREE.Matrix4();
-
-    let cubeGroup = new THREE.Group();
-    data.forEach((cube) => {
-      hexColor = cube[4] / cube[3];
-      color1 = Math.round(hexColor * 255).toString(16);
-      color2 = Math.round(hexColor * 90).toString(16);
-      color3 = Math.round(hexColor * 10).toString(16);
-      color1.length == 1 ? (color1 = '0' + color1) : color1;
-      color2.length == 1 ? (color2 = '0' + color2) : color2;
-      color3.length == 1 ? (color3 = '0' + color3) : color3;
-      hexColor = (
-        '#' +
-        color1.toString() +
-        color2.toString() +
-        color3.toString()
-      ).toString(16);
-      if (hexColor.length < 2) {
-        hexColor = '0' + hexColor;
-      }
-
-      const boxMesh = new THREE.Mesh(boxGeometry);
-      let defaultMaterial = new THREE.MeshBasicMaterial({ color: hexColor });
-      boxMesh.material = defaultMaterial;
-
-      matrix.setPosition(cube[0], cube[1], cube[2]);
-      boxMesh.applyMatrix4(matrix);
+    scenarioData.forEach((cube) => {
+      const hexColor = `#${((Math.round((cube[4] / cube[3]) * 255) << 16) | (Math.round((cube[4] / cube[3]) * 90) << 8) | Math.round((cube[4] / cube[3]) * 10)).toString(16).padStart(6, '0')}`;
+      const boxMesh = new THREE.Mesh(
+        boxGeometry,
+        new THREE.MeshBasicMaterial({ color: hexColor }),
+      );
+      boxMesh.position.set(cube[0], cube[1], cube[2]);
+      boxMesh.userData = { info: cube };
       cubeGroup.add(boxMesh);
     });
+    const boundingBox = new THREE.Box3().setFromObject(cubeGroup);
+    const center = boundingBox.getCenter(new THREE.Vector3());
+    cubeGroup.position.sub(center);
+
     scene.add(cubeGroup);
+
+    renderer.setPixelRatio(window.devicePixelRatio);
+    //renderer.setSize(window.innerWidth, window.innerHeight);
 
     camera.position.set(30, 30, 15);
 
@@ -96,13 +103,13 @@ const Deposit = () => {
     return () => {
       renderer.dispose();
     };
-  }, [data]);
+  }, [scenarioData]);
 
   return (
     <div
       id="3d-visualization"
       ref={containerRef}
-      style={{ width: '100%', height: '100%' }}
+      style={styles.visualization}
     ></div>
   );
 };

@@ -15,10 +15,10 @@ const colors = [
 
 const Upl = () => {
   console.log('Esperando datos...');
-  const { data, upl, setLoading, setInfo } = useFilter();
+  const { scenarioData, upl, setLoading, setInfo } = useFilter();
   const containerRef = useRef(null);
 
-  if (data.length >= 1531) {
+  if (scenarioData.length >= 1531) {
     setLoading(false);
   }
 
@@ -97,7 +97,7 @@ const Upl = () => {
     let colorCont = 0;
     let colorContDirection = 1;
 
-    const surfaceData = createSurfaceWithHoles(data);
+    const surfaceData = createSurfaceWithHoles(scenarioData);
     setInfo('Generando geometría...');
     surfaceData.forEach((row, x) => {
       row.forEach((depth, y) => {
@@ -142,7 +142,7 @@ const Upl = () => {
     return () => {
       renderer.dispose();
     };
-  }, [data, upl, setInfo]);
+  }, [scenarioData, upl, setInfo]);
 
   return (
     <div

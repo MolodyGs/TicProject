@@ -18,8 +18,9 @@ export const useAppState = () => {
 
 // Proveedor del contexto
 export const AppStateProvider = ({ children }) => {
-  const [data, setData] = useState([]);
+  const [minePlanData, setMinePlanData] = useState([]);
   const [scenario, setScenario] = useState(DEFAULT_SCENARIO);
+  const [scenarioData, setScenarioData] = useState([]);
   const [period, setPeriod] = useState(DEFAULT_PERIOD);
   const [lawRange, setLawRange] = useState(DEFAULT_LAW_RANGE);
   const [rockType, setRockType] = useState(DEFAULT_ROCK_TYPE);
@@ -34,10 +35,12 @@ export const AppStateProvider = ({ children }) => {
 
   const state = useMemo(
     () => ({
-      data,
-      setData,
+      minePlanData,
+      setMinePlanData,
       scenario,
       setScenario,
+      scenarioData,
+      setScenarioData,
       period,
       setPeriod,
       lawRange,
@@ -62,8 +65,9 @@ export const AppStateProvider = ({ children }) => {
       setLaw,
     }),
     [
-      data,
+      minePlanData,
       scenario,
+      scenarioData,
       period,
       lawRange,
       rockType,

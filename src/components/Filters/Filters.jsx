@@ -1,5 +1,11 @@
 import React from 'react';
 import { useFilter } from '../../hooks/useFilter';
+import {
+  METAL_TYPES,
+  PERIODS,
+  ROCK_TYPES,
+  SCENARIOS,
+} from '../../utils/constants';
 
 function Filters() {
   const {
@@ -11,6 +17,9 @@ function Filters() {
     setRockType,
     metalType,
     setMetalType,
+    period,
+    setPeriod,
+    applyFilters,
   } = useFilter();
 
   const onScenarioChange = (event) => {
@@ -29,25 +38,24 @@ function Filters() {
   const onMetalTypeChange = (event) => {
     setMetalType(event.target.value);
   };
+
+  const onPeriodChange = (event) => {
+    setPeriod(event.target.value);
+  };
+
   return (
     <div>
-      <h4 className="text-center">Filtros</h4>
       <p>Cargar datos de: </p>
       <select
         className="form-control"
         value={scenario}
         onChange={onScenarioChange}
       >
-        <option value="Scenario00.txt">Escenario 0</option>
-        <option value="Scenario01.txt">Escenario 1</option>
-        <option value="Scenario02.txt">Escenario 2</option>
-        <option value="Scenario03.txt">Escenario 3</option>
-        <option value="Scenario04.txt">Escenario 4</option>
-        <option value="Scenario05.txt">Escenario 5</option>
-        <option value="Scenario06.txt">Escenario 6</option>
-        <option value="Scenario07.txt">Escenario 7</option>
-        <option value="Scenario08.txt">Escenario 8</option>
-        <option value="Scenario09.txt">Escenario 9</option>
+        {SCENARIOS.map(({ value, label }) => (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        ))}
       </select>
       <div className="my-3">
         <p>
@@ -81,9 +89,11 @@ function Filters() {
           value={rockType}
           onChange={onRockTypeChange}
         >
-          <option value="todos">Todos</option>
-          <option value="A">A</option>
-          <option value="B">B</option>
+          {ROCK_TYPES.map(({ value, label }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
         </select>
       </div>
       <div className="my-3">
@@ -93,10 +103,31 @@ function Filters() {
           value={metalType}
           onChange={onMetalTypeChange}
         >
-          <option value="todos">Todos</option>
-          <option value="oro">Oro</option>
-          <option value="plata">Plata</option>
+          {METAL_TYPES.map(({ value, label }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
         </select>
+      </div>
+      <div className="my-3">
+        <p>Filtrar por periodo:</p>
+        <select
+          className="form-control"
+          value={period}
+          onChange={onPeriodChange}
+        >
+          {PERIODS.map(({ value, label }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="my-3">
+        <button className="btn btn-primary" onClick={applyFilters}>
+          Aplicar Filtros
+        </button>
       </div>
     </div>
   );
