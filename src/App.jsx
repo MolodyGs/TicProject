@@ -1,22 +1,27 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import { AppRoutes } from './AppRoutes';
 import Sidebar from './components/Sidebar/Sidebar';
 import CircularProgress from '@mui/material/CircularProgress';
 import './App.css';
 import { useFilter } from './hooks/useFilter';
+import { Routes, Route } from 'react-router-dom';
+import Deposit from './components/Visualization/Deposit';
+import Upl from './components/Visualization/UPL';
 
 function App() {
-
   const { loading, info } = useFilter();
-
 
   return (
     <>
       <div className={loading ? 'd-flex background-blur' : 'd-flex'}>
         <Sidebar />
         <div className="container-fluid">
-          <AppRoutes />
+          <Routes>
+            <Route path="/" element={<h2>Inicio</h2>}></Route>
+            <Route path="/deposit" element={<Deposit />}></Route>
+            <Route path="/upl" element={<Upl />}></Route>
+            <Route path="/stats" element={<h2>Estadisticas</h2>}></Route>
+          </Routes>
         </div>
       </div>
       <div

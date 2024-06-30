@@ -99,6 +99,11 @@ p{
   background-color: rgba(255 255 255);
 }
 
+#sidebar-wrapper {
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
 @keyframes loading-hide {
   0% {
     opacity: 1;
