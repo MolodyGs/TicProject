@@ -52,9 +52,9 @@ const LawCurve = () => {
 
   let sum = 0;
   orePorLey.map((item, index) => {
+    oreMedia.push(sum);
     sum += item / blockPorLey[index];
     console.log(sum);
-    oreMedia.push(sum);
     // console.log(ley);
     // oreAcumulado.push(ley);
   });
