@@ -67,7 +67,7 @@ const Histogram = () => {
         beginAtZero: true,
         title: {
           display: true,
-          text: 'Cantidad',
+          text: 'Frecuencia',
         },
       },
     },
