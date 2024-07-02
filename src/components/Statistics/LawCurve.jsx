@@ -1,23 +1,9 @@
 import { Line } from 'react-chartjs-2';
 import { useFilter } from '../../hooks/useFilter';
-import { useEffect, useState } from 'react';
-import { label } from 'three/examples/jsm/nodes/Nodes.js';
 
 const LawCurve = () => {
   const { scenarioData } = useFilter();
 
-  let block = 0;
-  scenarioData.map((item) => {
-    block += parseFloat(item[4]);
-  });
-
-  console.log(block);
-
-  // useEffect(() => {
-  //   setUplData(createSurfaceWithHoles(scenarioData));
-  // }, []);
-
-  // const { scenarioData } = useFilter();
   let Tonelaje = [];
   let oreAcumulado = [];
   let oreMedia = [];
@@ -26,7 +12,6 @@ const LawCurve = () => {
   let blockPorLey = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   let blockSuma = 0;
   let oreSuma = 0;
-  console.log('UPLD AAAAAAAAA');
 
   scenarioData.map((item) => {
     blockSuma = blockSuma + parseFloat(item[3]);
@@ -55,11 +40,7 @@ const LawCurve = () => {
     oreMedia.push(sum);
     sum += item / blockPorLey[index];
     console.log(sum);
-    // console.log(ley);
-    // oreAcumulado.push(ley);
   });
-
-  console.log(oreMedia);
 
   const labels = [
     '< 0.1',
@@ -74,17 +55,6 @@ const LawCurve = () => {
     '0.9',
     '1.0',
   ];
-  // uplData.map((item) => {
-  //   const block = (item[3] = parseFloat(item[3]));
-  //   let ore = 0;
-
-  //   if (parseFloat(item[4]) > 0) {
-  //     ore = parseFloat(item[4]);
-  //     const Itemlaw = (ore / block).toFixed(1);
-  //     laws[parseInt(Itemlaw * 10)]++;
-  //     tonn[parseInt(Itemlaw * 10)] += block;
-  //   }
-  // });
 
   const data = {
     labels: labels,
@@ -127,7 +97,6 @@ const LawCurve = () => {
         },
       },
       y1: {
-        // Segundo eje Y para el gráfico de línea
         type: 'linear',
         display: true,
         position: 'right',
@@ -135,9 +104,8 @@ const LawCurve = () => {
           display: true,
           text: 'Ley media',
         },
-        // grid line settings
         grid: {
-          drawOnChartArea: false, // only want the grid lines for one axis to show up
+          drawOnChartArea: false,
         },
       },
     },
