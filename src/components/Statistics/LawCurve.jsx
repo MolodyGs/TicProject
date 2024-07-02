@@ -94,6 +94,7 @@ const LawCurve = () => {
         data: oreAcumulado,
         fill: false,
         backgroundColor: 'rgb(0, 136, 204)',
+        borderColor: 'rgb(0, 136, 204)',
         tension: 0.1,
       },
       {
@@ -101,6 +102,7 @@ const LawCurve = () => {
         data: oreMedia,
         fill: false,
         backgroundColor: 'rgb(102, 204, 255)',
+        borderColor: 'rgb(102, 204, 255)',
         tension: 0.1,
         yAxisID: 'y1',
       },
