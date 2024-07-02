@@ -65,7 +65,7 @@ const Deposit = () => {
         boxGeometry,
         new THREE.MeshBasicMaterial({ color: hexColor }),
       );
-      boxMesh.position.set(cube[0], cube[1], cube[2]);
+      boxMesh.position.set(cube[0], -cube[2], cube[1]);
       boxMesh.userData = { info: cube };
       cubeGroup.add(boxMesh);
     });

@@ -4,13 +4,19 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { useFilter } from '../../hooks/useFilter';
 
 const colors = [
-  new THREE.Color('#202020'),
-  new THREE.Color('#404040'),
-  new THREE.Color('#606060'),
-  new THREE.Color('#808080'),
-  new THREE.Color('#A0A0A0'),
-  new THREE.Color('#C0C0C0'),
-  new THREE.Color('#E0E0E0'),
+  new THREE.Color('#ff884d'),
+  new THREE.Color('#ff7733'),
+  new THREE.Color('#ff661a'),
+  new THREE.Color('#ff5500'),
+  new THREE.Color('#e64d00'),
+  new THREE.Color('#cc4400'),
+  new THREE.Color('#b33c00'),
+  new THREE.Color('#993300'),
+  new THREE.Color('#802b00'),
+  new THREE.Color('#662200'),
+  new THREE.Color('#4d1a00'),
+  new THREE.Color('#331100'),
+  new THREE.Color('#1a0900'),
 ];
 
 const Upl = () => {
@@ -100,8 +106,14 @@ const Upl = () => {
     const surfaceData = createSurfaceWithHoles(scenarioData);
     setInfo('Generando geometría...');
     surfaceData.forEach((row, x) => {
+      let colorCount2 = 0;
       row.forEach((depth, y) => {
-        const cubeGroup = createRecGroup(x, y, depth, colors[colorCont]);
+        colorCount2 = depth;
+        console.log(depth);
+
+        const cubeGroup = createRecGroup(x, y, depth, colors[colorCount2]);
+        colorCount2++;
+
         if (cubeGroup != null) {
           scene.add(cubeGroup);
         }
