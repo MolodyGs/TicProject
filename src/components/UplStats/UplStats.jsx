@@ -12,7 +12,7 @@ function UplDashboard() {
           className={upl !== null && upl < 0 ? 'text-danger' : 'text-success'}
         >
           {upl !== null && typeof upl === 'number'
-            ? `${upl.toFixed(2)} USD`
+            ? `${parseInt(upl).toLocaleString()} USD`
             : 'Cargando...'}
         </span>
       </p>
@@ -20,7 +20,7 @@ function UplDashboard() {
         <i className="fas fa-dollar-sign mr-2"></i> Costo de extracción:{' '}
         <span>
           {extractionCost !== null && typeof extractionCost === 'number'
-            ? `${extractionCost.toFixed(2)} USD`
+            ? `${parseInt(extractionCost).toLocaleString()} USD`
             : 'Cargando...'}
         </span>
       </p>
@@ -28,7 +28,7 @@ function UplDashboard() {
         <i className="fas fa-dollar-sign mr-2"></i> Valor venta total:{' '}
         <span>
           {totalValue !== null && typeof totalValue === 'number'
-            ? `${totalValue.toFixed(2)} USD`
+            ? `${parseInt(totalValue).toLocaleString()} USD`
             : 'Cargando...'}
         </span>
       </p>
