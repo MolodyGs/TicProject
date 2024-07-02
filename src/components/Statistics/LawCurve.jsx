@@ -1,29 +1,21 @@
 import { Line } from 'react-chartjs-2';
 import { useFilter } from '../../hooks/useFilter';
-import { useEffect, useState } from 'react';
 
 const LawCurve = () => {
   const { scenarioData } = useFilter();
 
-  let block = 0;
-  scenarioData.map((item) => {
-    block += parseFloat(item[4]);
-  });
-
-  // useEffect(() => {
-  //   setUplData(createSurfaceWithHoles(scenarioData));
-  // }, []);
-
-  // const { scenarioData } = useFilter();
   let Tonelaje = [];
   let oreAcumulado = [];
+  let oreMedia = [];
   let orePorLey = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   let oreley = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   let blockPorLey = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   let blockSuma = 0;
+  let oreSuma = 0;
 
   scenarioData.map((item) => {
     blockSuma = blockSuma + parseFloat(item[3]);
+    oreSuma = oreSuma + parseFloat(item[4]);
     let ley = parseFloat(item[4]) / parseFloat(item[3]);
     ley = ley.toFixed(1);
     orePorLey[ley * 10] += item[4];
@@ -31,17 +23,23 @@ const LawCurve = () => {
     oreley[ley * 10] += parseFloat(ley);
   });
 
-  let blockSumaAux = blockSuma;
+  let oreSumaAux = oreSuma;
+  orePorLey.map((item) => {
+    oreAcumulado.push(oreSumaAux / 1000 / 1000);
+    oreSumaAux = oreSumaAux - item;
+  });
 
-  blockPorLey.map((item, index) => {
+  let blockSumaAux = blockSuma;
+  blockPorLey.map((item) => {
     Tonelaje.push(blockSumaAux);
     blockSumaAux = blockSumaAux - item;
   });
 
   let sum = 0;
   orePorLey.map((item, index) => {
+    oreMedia.push(sum);
     sum += item / blockPorLey[index];
-    oreAcumulado.push(sum);
+    console.log(sum);
   });
 
   const labels = [
@@ -57,33 +55,24 @@ const LawCurve = () => {
     '0.9',
     '1.0',
   ];
-  // uplData.map((item) => {
-  //   const block = (item[3] = parseFloat(item[3]));
-  //   let ore = 0;
-
-  //   if (parseFloat(item[4]) > 0) {
-  //     ore = parseFloat(item[4]);
-  //     const Itemlaw = (ore / block).toFixed(1);
-  //     laws[parseInt(Itemlaw * 10)]++;
-  //     tonn[parseInt(Itemlaw * 10)] += block;
-  //   }
-  // });
 
   const data = {
     labels: labels,
     datasets: [
       {
         label: 'Tonleaje',
-        data: Tonelaje,
+        data: oreAcumulado,
         fill: false,
-        borderColor: 'rgb(75, 192, 192)',
+        backgroundColor: 'rgb(0, 136, 204)',
+        borderColor: 'rgb(0, 136, 204)',
         tension: 0.1,
       },
       {
         label: 'ley media',
-        data: oreAcumulado,
+        data: oreMedia,
         fill: false,
-        borderColor: 'rgb(219, 124, 254)',
+        backgroundColor: 'rgb(102, 204, 255)',
+        borderColor: 'rgb(102, 204, 255)',
         tension: 0.1,
         yAxisID: 'y1',
       },
@@ -92,27 +81,31 @@ const LawCurve = () => {
 
   const options = {
     scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Ley de corte (%)',
+        },
+      },
       y: {
         type: 'linear',
         display: true,
         position: 'left',
         title: {
           display: true,
-          text: 'Eje Y (Barras)',
+          text: 'Tonelaje (Mt)',
         },
       },
       y1: {
-        // Segundo eje Y para el gráfico de línea
         type: 'linear',
         display: true,
         position: 'right',
         title: {
           display: true,
-          text: 'Eje Y (Línea)',
+          text: 'Ley media',
         },
-        // grid line settings
         grid: {
-          drawOnChartArea: false, // only want the grid lines for one axis to show up
+          drawOnChartArea: false,
         },
       },
     },
