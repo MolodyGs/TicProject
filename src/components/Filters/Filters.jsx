@@ -96,7 +96,7 @@ function Filters() {
           ))}
         </select>
       </div>
-      <div className="my-3">
+      {/* <div className="my-3">
         <p>Filtrar por tipo de metal:</p>
         <select
           className="form-control"
@@ -109,7 +109,7 @@ function Filters() {
             </option>
           ))}
         </select>
-      </div>
+      </div> */}
       <div className="my-3">
         <p>Filtrar por periodo:</p>
         <select
