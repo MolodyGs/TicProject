@@ -34,6 +34,14 @@ export const useFilter = () => {
     setInfo,
     law,
     setLaw,
+    transversalX,
+    setTransversalX,
+    transversalY,
+    setTransversalY,
+    transversalZ,
+    setTransversalZ,
+    useTransversal,
+    setUseTransversal,
   } = useAppState();
 
   const [filtersApplied, setFiltersApplied] = useState(true);
@@ -88,10 +96,28 @@ export const useFilter = () => {
         });
       });
 
+      // Filtrar por seccion transversal
+      let filteredByTransversal;
+      if (useTransversal) {
+        filteredByTransversal = filteredByPeriod.filter((cube) => {
+          const [x, y, z] = cube;
+          return (
+            x >= transversalX[0] &&
+            x <= transversalX[1] &&
+            y >= transversalY[0] &&
+            y <= transversalY[1] &&
+            z >= transversalZ[0] &&
+            z <= transversalZ[1]
+          );
+        });
+      } else {
+        filteredByTransversal = filteredByPeriod;
+      }
+
       let medianLaw = 0;
       let totalBlocks = 0;
       // Calcular costos de extracción y valor total
-      const updatedFilteredData = filteredByPeriod.map((cube) => {
+      const updatedFilteredData = filteredByTransversal.map((cube) => {
         const law = ((cube[4] + cube[5]) / cube[3]) * 100;
         medianLaw += law;
         totalBlocks += 1;
@@ -166,6 +192,14 @@ export const useFilter = () => {
     setLoading,
     info,
     setInfo,
+    transversalX,
+    setTransversalX,
+    transversalY,
+    setTransversalY,
+    transversalZ,
+    setTransversalZ,
+    useTransversal,
+    setUseTransversal,
     applyFilters,
   };
 };

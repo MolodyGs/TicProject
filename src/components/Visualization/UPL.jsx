@@ -36,17 +36,31 @@ const Upl = () => {
     const scene = new THREE.Scene();
     scene.background = new THREE.Color('#FFFFFF');
     const camera = new THREE.PerspectiveCamera(
-      90,
+      75,
       container.offsetWidth / container.offsetHeight,
       0.1,
       1000,
     );
+
+    camera.lookAt(0, 0, 0);
 
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(container.offsetWidth, container.offsetHeight);
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
     const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.enableZoom = true;
+    controls.enablePan = true;
+
+    const axesHelper = new THREE.AxesHelper(25);
+    scene.add(axesHelper);
+
+    const gridSize = 100;
+    const gridDivisions = 100;
+
+    const gridXY = new THREE.GridHelper(gridSize, gridDivisions);
+    scene.add(gridXY);
 
     const createSurfaceWithHoles = (data) => {
       const surfaceSize = 42;
@@ -89,14 +103,11 @@ const Upl = () => {
       if (z == 0) return null;
       const material = new THREE.MeshBasicMaterial({ color });
       const recGeometry = new THREE.BoxGeometry(1, z, 1);
-      if (z < 0) {
-        console.log(z);
-      }
       const solidCube = new THREE.Mesh(recGeometry, material);
 
       const cubeGroup = new THREE.Group();
       cubeGroup.add(solidCube);
-      cubeGroup.position.set(x, z - z / 2, y);
+      cubeGroup.position.set(x, z / 2, y);
       return cubeGroup;
     };
 
@@ -126,7 +137,12 @@ const Upl = () => {
       colorCont += colorContDirection;
     });
 
-    camera.position.set(0, 30, 75);
+    const box = new THREE.Box3().setFromObject(scene);
+    const center = box.getCenter(new THREE.Vector3());
+    controls.target.set(center.x, center.y, center.z);
+
+    camera.position.set(center.x, center.y + 30, center.z + 75);
+
     controls.update();
 
     const animate = () => {

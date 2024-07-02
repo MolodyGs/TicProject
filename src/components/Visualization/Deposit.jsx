@@ -76,7 +76,6 @@ const Deposit = () => {
     scene.add(cubeGroup);
 
     renderer.setPixelRatio(window.devicePixelRatio);
-    //renderer.setSize(window.innerWidth, window.innerHeight);
 
     camera.position.set(30, 30, 15);
 

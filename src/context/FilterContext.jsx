@@ -32,6 +32,10 @@ export const AppStateProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [info, setInfo] = useState('');
   const [law, setLaw] = useState(0);
+  const [transversalX, setTransversalX] = useState([0, 100]);
+  const [transversalY, setTransversalY] = useState([0, 100]);
+  const [transversalZ, setTransversalZ] = useState([0, 100]);
+  const [useTransversal, setUseTransversal] = useState(false);
 
   const state = useMemo(
     () => ({
@@ -63,6 +67,14 @@ export const AppStateProvider = ({ children }) => {
       setInfo,
       law,
       setLaw,
+      transversalX,
+      setTransversalX,
+      transversalY,
+      setTransversalY,
+      transversalZ,
+      setTransversalZ,
+      useTransversal,
+      setUseTransversal,
     }),
     [
       minePlanData,
@@ -79,6 +91,10 @@ export const AppStateProvider = ({ children }) => {
       loading,
       info,
       law,
+      transversalX,
+      transversalY,
+      transversalZ,
+      useTransversal,
     ],
   );
 
