@@ -7,7 +7,7 @@ import { useFilter } from './hooks/useFilter';
 import { Routes, Route } from 'react-router-dom';
 import Deposit from './components/Visualization/Deposit';
 import Upl from './components/Visualization/UPL';
-import Histogram from './components/Statistics/Histogram';
+import Statistics from './components/Statistics/Statistics';
 
 function App() {
   const { loading, info } = useFilter();
@@ -21,7 +21,7 @@ function App() {
             <Route path="/" element={<h2>Inicio</h2>}></Route>
             <Route path="/deposit" element={<Deposit />}></Route>
             <Route path="/upl" element={<Upl />}></Route>
-            <Route path="/stats" element={<Histogram />}></Route>
+            <Route path="/stats" element={<Statistics />}></Route>
           </Routes>
         </div>
       </div>

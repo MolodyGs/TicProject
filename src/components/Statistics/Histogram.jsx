@@ -74,7 +74,7 @@ const Histogram = () => {
   };
 
   return (
-    <div style={{ height: 400 }}>
+    <div style={{ height: 400, marginBottom: 0, width: 600 }}>
       <h2 style={{ borderTop: 50 }}>Histograma Ley - Tipo de metal</h2>
       <Bar data={chartDataTypeA} options={options} />
     </div>
