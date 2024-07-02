@@ -10,8 +10,6 @@ const LawCurve = () => {
     block += parseFloat(item[4]);
   });
 
-  console.log(block);
-
   // useEffect(() => {
   //   setUplData(createSurfaceWithHoles(scenarioData));
   // }, []);
@@ -23,7 +21,6 @@ const LawCurve = () => {
   let oreley = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   let blockPorLey = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   let blockSuma = 0;
-  console.log('UPLD AAAAAAAAA');
 
   scenarioData.map((item) => {
     blockSuma = blockSuma + parseFloat(item[3]);
@@ -44,13 +41,8 @@ const LawCurve = () => {
   let sum = 0;
   orePorLey.map((item, index) => {
     sum += item / blockPorLey[index];
-    console.log(sum);
     oreAcumulado.push(sum);
-    // console.log(ley);
-    // oreAcumulado.push(ley);
   });
-
-  console.log(oreAcumulado);
 
   const labels = [
     '< 0.1',
