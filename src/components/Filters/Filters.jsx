@@ -15,7 +15,7 @@ function Filters() {
     setLawRange,
     rockType,
     setRockType,
-    metalType,
+    activePage,
     setMetalType,
     period,
     setPeriod,
@@ -158,7 +158,7 @@ function Filters() {
           <label htmlFor="useTransversal"> Usar Filtro Transversal</label>
         </div>
 
-        {useTransversal && (
+        {useTransversal && activePage === 'yacimiento' && (
           <>
             <div className="my-3">
               <p>
